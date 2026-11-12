@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#F7F1E7">
+<title>MALIN - Mon quotidien, en mieux</title>
+<style>
+:root {
+  --cream: #F7F1E7;
+  --black: #242321;
+  --gold: #C5A15B;
+  --white: #FFFFFF;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--black);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 25px 22px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo {
+  font-size: 29px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.logo span { color: var(--gold); }
+.tagline { font-size: 12px; margin-top: 3px; }
+.settings {
+  border: 0;
+  background: white;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+}
+main {
+  max-width: 650px;
+  margin: auto;
+  padding: 15px 20px 100px;
+}
+h1 { font-size: 27px; margin-bottom: 7px; }
+.subtitle { color: #777; margin-top: 0; }
+.highlight {
+  background: var(--black);
+  color: white;
+  padding: 22px;
+  border-radius: 20px;
+  margin: 25px 0;
+}
+.highlight strong {
+  display: block;
+  color: #E4C27F;
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+.highlight p { margin: 0; line-height: 1.5; }
+h2 { font-size: 19px; margin: 28px 0 15px; }
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px;
+}
+.tile {
+  border: 1px solid #E6D7BE;
+  background: white;
+  border-radius: 18px;
+  padding: 20px 13px;
+  min-height: 145px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--black);
+  box-shadow: 0 3px 10px #00000009;
+}
+.tile:active { transform: scale(.98); }
+.tile .emoji { font-size: 31px; display: block; margin-bottom: 12px; }
+.tile strong { font-size: 16px; display: block; }
+.tile small { color: #777; display: block; margin-top: 7px; line-height: 1.4; }
+.tip {
+  margin-top: 23px;
+  padding: 19px;
+  border-radius: 18px;
+  background: #EFE1C7;
+  line-height: 1.5;
+}
+.tip strong { display: block; margin-bottom: 5px; }
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #E8E0D4;
+  display: flex;
+  justify-content: space-around;
+  padding: 13px 5px calc(13px + env(safe-area-inset-bottom));
+}
+footer button {
+  background: none;
+  border: 0;
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+}
+footer span { display: block; font-size: 21px; margin-bottom: 4px; }
+footer button.active { color: #A77E32; font-weight: bold; }
+.page { display: none; }
+.page.active { display: block; }
+.back {
+  background: var(--black);
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin-top: 20px;
+  cursor: pointer;
+}
+@media(min-width:600px) {
+  main { padding-top: 30px; }
+  .tile { min-height: 165px; padding: 25px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">MALIN<span>.</span></div>
+    <div class="tagline">Mon quotidien, en mieux.</div>
+  </div>
+  <button class="settings" aria-label="Paramètres">⚙️</button>
+</header>
+
+<main>
+  <section class="page active" id="accueil">
+    <h1>Bonjour ! ☀️</h1>
+    <p class="subtitle">Bienvenue dans votre espace MALIN.</p>
+
+    <div class="highlight">
+      <strong>✨ Le quotidien devient plus simple</strong>
+      <p>Organisez votre budget, vos courses et votre maison en un seul endroit.</p>
+    </div>
+
+    <h2>Que souhaitez-vous faire ?</h2>
+
+    <div class="tiles">
+      <button class="tile" onclick="ouvrir('budget')">
+        <span class="emoji">💰</span>
+        <strong>Mon budget</strong>
+        <small>Suivez vos dépenses et vos économies.</small>
+      </button>
+      <button class="tile" onclick="ouvrir('courses')">
+        <span class="emoji">🛒</span>
+        <strong>Mes courses</strong>
+        <small>Préparez vos listes de courses.</small>
+      </button>
+      <button class="tile" onclick="ouvrir('maison')">
+        <span class="emoji">🏡</span>
+        <strong>Ma maison</strong>
+        <small>Organisez vos tâches quotidiennes.</small>
+      </button>
+      <button class="tile" onclick="ouvrir('astuces')">
+        <span class="emoji">💡</span>
+        <strong>Mes astuces</strong>
+        <small>Découvrez des idées pratiques.</small>
+      </button>
+    </div>
+
+    <div class="tip">
+      <strong>⭐ L'esprit MALIN</strong>
+      De petites astuces pour mieux organiser son quotidien et faire des économies.
+    </div>
+  </section>
+
+  <section class="page" id="budget">
+    <h1>💰 Mon budget</h1>
+    <p class="subtitle">Gardez un œil sur vos dépenses.</p>
+    <p>Cette rubrique accueillera votre suivi de budget et vos dépenses.</p>
+    <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+  </section>
+
+  <section class="page" id="courses">
+    <h1>🛒 Mes courses</h1>
+    <p class="subtitle">Préparez vos achats simplement.</p>
+    <p>Cette rubrique accueillera vos listes de courses.</p>
+    <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+  </section>
+
+  <section class="page" id="maison">
+    <h1>🏡 Ma maison</h1>
+    <p class="subtitle">Une maison mieux organisée.</p>
+    <p>Cette rubrique accueillera vos tâches et vos suivis.</p>
+    <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+  </section>
+
+  <section class="page" id="astuces">
+    <h1>💡 Mes astuces</h1>
+    <p class="subtitle">Des idées pour faciliter votre quotidien.</p>
+    <p>Cette rubrique accueillera nos conseils pratiques et nos astuces économies.</p>
+    <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+  </section>
+</main>
+
+<footer>
+  <button class="active" onclick="ouvrir('accueil',this)"><span>⌂</span>Accueil</button>
+  <button onclick="ouvrir('budget',this)"><span>€</span>Budget</button>
+  <button onclick="ouvrir('courses',this)"><span>🛒</span>Courses</button>
+  <button onclick="ouvrir('maison',this)"><span>⌂</span>Maison</button>
+  <button onclick="ouvrir('astuces',this)"><span>✦</span>Astuces</button>
+</footer>
+
+<script>
+function ouvrir(nom, bouton) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(nom).classList.add('active');
+  document.querySelectorAll('footer button').forEach(b => b.classList.remove('active'));
+  if (bouton) bouton.classList.add('active');
+  else {
+    const boutons = document.querySelectorAll('footer button');
+    const index = ['accueil','budget','courses','maison','astuces'].indexOf(nom);
+    if(index >= 0) boutons[index].classList.add('active');
+  }
+  window.scrollTo(0,0);
+}
+</script>
+
+</body>
+</html>
