@@ -163,6 +163,82 @@ input {
   border-radius:14px;margin-top:18px;
   font-size:14px;line-height:1.5;
 }
+select {
+  width:100%;
+  padding:13px;
+  border:1px solid #DED4C5;
+  border-radius:10px;
+  background:#FFFEFC;
+  font-size:15px;
+  color:var(--black);
+}
+
+.budget-grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.budget-card {
+  background:white;
+  border:1px solid #E6D7BE;
+  border-radius:16px;
+  padding:16px 12px;
+}
+
+.budget-card small {
+  display:block;
+  color:#777;
+  margin-bottom:9px;
+  font-size:12px;
+}
+
+.budget-card strong {
+  font-size:19px;
+  overflow-wrap:anywhere;
+}
+
+.budget-solde {
+  background:var(--black);
+  color:white;
+  border-color:var(--black);
+}
+
+.budget-solde small {
+  color:#E4C27F;
+}
+
+.budget-operation {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:13px 0;
+  border-bottom:1px solid #EEE7DC;
+}
+
+.budget-operation:last-child {
+  border-bottom:0;
+}
+
+.budget-operation-info {
+  flex:1;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.budget-operation-info small {
+  display:block;
+  color:#888;
+  margin-top:4px;
+  font-size:12px;
+}
+
+.budget-operation strong {
+  white-space:nowrap;
+  font-size:14px;
+}
+
 @media(min-width:600px) {
   main {padding-top:30px}
   .tile {min-height:165px;padding:25px}
@@ -268,12 +344,86 @@ input {
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
 
+
 <section class="page" id="budget">
   <h1>💰 Mon budget</h1>
-  <p class="subtitle">Gardez un œil sur vos dépenses.</p>
-  <p>Votre suivi de budget arrivera dans une prochaine étape.</p>
-  <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+  <p class="subtitle">Gardez le contrôle de votre argent.</p>
+
+  <div class="panel">
+    <label class="field-label" for="budgetMonth">Mois à consulter</label>
+    <input type="month" id="budgetMonth">
+  </div>
+
+  <div class="budget-grid">
+    <div class="budget-card">
+      <small>Mes revenus</small>
+      <strong id="totalRevenus">0,00 €</strong>
+    </div>
+    <div class="budget-card">
+      <small>Mes dépenses</small>
+      <strong id="totalDepenses">0,00 €</strong>
+    </div>
+    <div class="budget-card">
+      <small>Mon épargne</small>
+      <strong id="totalEpargne">0,00 €</strong>
+    </div>
+    <div class="budget-card budget-solde">
+      <small>Mon disponible</small>
+      <strong id="soldeDisponible">0,00 €</strong>
+    </div>
+  </div>
+
+  <div class="panel">
+    <strong>Ajouter une opération</strong>
+    <div style="height:14px"></div>
+
+    <label class="field-label" for="budgetType">Type d'opération</label>
+    <select id="budgetType">
+      <option value="revenu">💰 Revenu</option>
+      <option value="charge">🏠 Charge fixe</option>
+      <option value="depense">🛍️ Dépense</option>
+      <option value="epargne">🐷 Épargne</option>
+    </select>
+
+    <div style="height:12px"></div>
+
+    <label class="field-label" for="budgetNom">Description</label>
+    <input id="budgetNom" type="text"
+      placeholder="Ex. : Salaire, électricité, courses..."
+      maxlength="70">
+
+    <div style="height:12px"></div>
+
+    <label class="field-label" for="budgetMontant">Montant en euros</label>
+    <input id="budgetMontant" type="number"
+      min="0.01" max="10000000" step="0.01"
+      placeholder="Ex. : 120">
+
+    <div style="height:14px"></div>
+
+    <button class="add-button" onclick="ajouterOperation()">
+      Ajouter à mon budget +
+    </button>
+  </div>
+
+  <div class="panel">
+    <strong>📋 Mes opérations</strong>
+    <div id="budgetListe">
+      <div class="empty">Aucune opération pour ce mois.</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    💡 <strong>Astuce MALIN</strong><br>
+    Ajoutez vos revenus et vos dépenses au fur et à mesure.
+    Votre budget est sauvegardé automatiquement sur cet appareil.
+  </div>
+
+  <button class="back" onclick="ouvrir('accueil')">
+    ← Retour à l'accueil
+  </button>
 </section>
+
 
 <section class="page" id="maison">
   <h1>🏡 Ma maison</h1>
@@ -449,6 +599,160 @@ function ouvrir(nom, bouton) {
 document.getElementById("productInput").addEventListener("keydown", e => {
   if (e.key === "Enter") ajouterProduit();
 });
+
+const BUDGET_KEY = "malin_budget_v1";
+let operationsBudget = [];
+
+function moisActuel() {
+  const maintenant = new Date();
+  return maintenant.getFullYear() + "-" +
+    String(maintenant.getMonth() + 1).padStart(2, "0");
+}
+
+function chargerBudget() {
+  try {
+    operationsBudget = JSON.parse(
+      localStorage.getItem(BUDGET_KEY) || "[]"
+    );
+    if (!Array.isArray(operationsBudget)) operationsBudget = [];
+  } catch (e) {
+    operationsBudget = [];
+  }
+
+  document.getElementById("budgetMonth").value = moisActuel();
+  afficherBudget();
+}
+
+function sauvegarderBudget() {
+  localStorage.setItem(
+    BUDGET_KEY,
+    JSON.stringify(operationsBudget)
+  );
+}
+
+function ajouterOperation() {
+  const type = document.getElementById("budgetType").value;
+  const nom = document.getElementById("budgetNom").value.trim();
+  const montant = Number(
+    document.getElementById("budgetMontant").value
+  );
+
+  if (!nom) {
+    alert("Indiquez une description.");
+    return;
+  }
+
+  if (!Number.isFinite(montant) || montant <= 0 ||
+      montant > 10000000) {
+    alert("Indiquez un montant valide.");
+    return;
+  }
+
+  operationsBudget.push({
+    id: Date.now() + "-" + Math.random().toString(36).slice(2),
+    type: type,
+    nom: nom,
+    montant: Math.round(montant * 100) / 100,
+    mois: document.getElementById("budgetMonth").value
+  });
+
+  sauvegarderBudget();
+  afficherBudget();
+
+  document.getElementById("budgetNom").value = "";
+  document.getElementById("budgetMontant").value = "";
+}
+
+function supprimerOperation(id) {
+  if (!confirm("Supprimer cette opération ?")) return;
+
+  operationsBudget = operationsBudget.filter(o => o.id !== id);
+  sauvegarderBudget();
+  afficherBudget();
+}
+
+function afficherBudget() {
+  const mois = document.getElementById("budgetMonth").value;
+
+  const operations = operationsBudget.filter(o => o.mois === mois);
+
+  const revenus = operations
+    .filter(o => o.type === "revenu")
+    .reduce((total, o) => total + o.montant, 0);
+
+  const depenses = operations
+    .filter(o => o.type === "charge" || o.type === "depense")
+    .reduce((total, o) => total + o.montant, 0);
+
+  const epargne = operations
+    .filter(o => o.type === "epargne")
+    .reduce((total, o) => total + o.montant, 0);
+
+  const disponible = revenus - depenses - epargne;
+
+  const euros = montant => montant.toLocaleString("fr-FR", {
+    style: "currency",
+    currency: "EUR"
+  });
+
+  document.getElementById("totalRevenus").textContent = euros(revenus);
+  document.getElementById("totalDepenses").textContent = euros(depenses);
+  document.getElementById("totalEpargne").textContent = euros(epargne);
+  document.getElementById("soldeDisponible").textContent = euros(disponible);
+
+  const liste = document.getElementById("budgetListe");
+  liste.replaceChildren();
+
+  if (operations.length === 0) {
+    const vide = document.createElement("div");
+    vide.className = "empty";
+    vide.textContent = "Aucune opération pour ce mois.";
+    liste.appendChild(vide);
+    return;
+  }
+
+  const types = {
+    revenu: "💰 Revenu",
+    charge: "🏠 Charge fixe",
+    depense: "🛍️ Dépense",
+    epargne: "🐷 Épargne"
+  };
+
+  operations.forEach(o => {
+    const ligne = document.createElement("div");
+    ligne.className = "budget-operation";
+
+    const info = document.createElement("div");
+    info.className = "budget-operation-info";
+
+    const nom = document.createElement("strong");
+    nom.textContent = o.nom;
+
+    const detail = document.createElement("small");
+    detail.textContent = types[o.type] || "Opération";
+
+    info.append(nom, detail);
+
+    const montant = document.createElement("strong");
+    montant.textContent =
+      (o.type === "revenu" ? "+" : "-") + euros(o.montant);
+
+    const supprimer = document.createElement("button");
+    supprimer.className = "delete-button";
+    supprimer.textContent = "✕";
+    supprimer.setAttribute("aria-label", "Supprimer " + o.nom);
+    supprimer.addEventListener("click", () => supprimerOperation(o.id));
+
+    ligne.append(info, montant, supprimer);
+    liste.appendChild(ligne);
+  });
+}
+
+document.getElementById("budgetMonth").addEventListener(
+  "change", afficherBudget
+);
+
+chargerBudget();
 
 chargerProduits();
 </script>
