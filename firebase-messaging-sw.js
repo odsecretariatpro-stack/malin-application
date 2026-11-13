@@ -2,7 +2,7 @@ importScripts("https://www.gstatic.com/firebasejs/13.3.0/firebase-app-compat.js"
 importScripts("https://www.gstatic.com/firebasejs/13.3.0/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-  apiKey: "AIzaSyAbix_o11EqXXUTNk0aBOhE0detRdFbXwU",
+  apiKey: "AIzaSyAbix_o11EqUTNk0aBOH0E0detRdFbXwU",
   authDomain: "malin-5e7ea.firebaseapp.com",
   projectId: "malin-5e7ea",
   storageBucket: "malin-5e7ea.firebasestorage.app",
