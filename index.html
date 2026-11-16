@@ -667,12 +667,13 @@ function supprimerListe() {
   sauvegarderToutesLesListes();
   afficherProduits();
 }
-  function exporterListes() {
+ function exporterListes() {
   const sauvegarde = {
-    version: 1,
+    version: 2,
     date: new Date().toISOString(),
     listeActiveId: listeActiveId,
-    listes: listesCourses
+    listes: listesCourses,
+    budget: operationsBudget
   };
 
   const fichier = new Blob(
@@ -684,17 +685,18 @@ function supprimerListe() {
   const url = URL.createObjectURL(fichier);
 
   lien.href = url;
-  lien.download = "MALIN-sauvegarde-courses.json";
+  lien.download = "MALIN-sauvegarde-complete.json";
   lien.click();
 
   URL.revokeObjectURL(url);
+}
 }
 
 function importerListes(event) {
   const fichier = event.target.files[0];
   if (!fichier) return;
 
-  if (!confirm("Importer cette sauvegarde remplacera toutes les listes actuelles. Continuer ?")) {
+  if (!confirm("Cette restauration remplacera tes listes de courses et ton budget si le fichier en contient. Continuer ?")) {
     event.target.value = "";
     return;
   }
@@ -724,7 +726,23 @@ function importerListes(event) {
       );
 
       if (!listesValides) {
-        throw new Error("Données invalides");
+        throw new Error("Listes invalides");
+      }
+
+      if (sauvegarde.budget !== undefined) {
+        const budgetValide = Array.isArray(sauvegarde.budget) &&
+          sauvegarde.budget.every(o =>
+            o &&
+            typeof o.id === "string" &&
+            typeof o.type === "string" &&
+            typeof o.nom === "string" &&
+            Number.isFinite(o.montant) &&
+            typeof o.mois === "string"
+          );
+
+        if (!budgetValide) {
+          throw new Error("Budget invalide");
+        }
       }
 
       listesCourses = sauvegarde.listes;
@@ -734,8 +752,14 @@ function importerListes(event) {
 
       produits = listesCourses.find(l => l.id === listeActiveId).produits;
 
+      if (Array.isArray(sauvegarde.budget)) {
+        operationsBudget = sauvegarde.budget;
+        sauvegarderBudget();
+      }
+
       sauvegarderToutesLesListes();
       afficherProduits();
+      afficherBudget();
 
       alert("Sauvegarde MALIN importée avec succès !");
     } catch (e) {
@@ -746,6 +770,7 @@ function importerListes(event) {
   };
 
   lecteur.readAsText(fichier);
+}
 }
   function ajouterProduit() {
   const nom = document.getElementById("productInput").value.trim();
