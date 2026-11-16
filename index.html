@@ -485,6 +485,10 @@ select {
     <h2>Mes informations</h2>
     <label for="profilNom">Mon prénom ou pseudonyme</label>
     <input type="text" id="profilNom" placeholder="Comment souhaitez-vous être appelé ?">
+    
+<label for="profilFoyer">Nombre de personnes dans mon foyer</label>
+<input type="number" id="profilFoyer" min="1" max="20" placeholder="Exemple : 4">
+
     <button onclick="sauvegarderProfil()">💾 Enregistrer mon profil</button>
   </div>
 
@@ -1092,27 +1096,42 @@ chargerBudget();
 
 chargerProduits();
 
+
 function sauvegarderProfil() {
   const nom = document.getElementById("profilNom").value.trim();
+  const foyer = document.getElementById("profilFoyer").value;
 
   if (!nom) {
     alert("Veuillez saisir votre prénom ou pseudonyme.");
     return;
   }
 
+  if (!foyer || Number(foyer) < 1 || Number(foyer) > 20 || !Number.isInteger(Number(foyer))) {
+    alert("Veuillez indiquer un nombre de personnes entre 1 et 20.");
+    return;
+  }
+
   localStorage.setItem("malinProfilNom", nom);
+  localStorage.setItem("malinProfilFoyer", foyer);
+
   alert("Votre profil a bien été enregistré !");
 }
 
 function chargerProfil() {
   const nom = localStorage.getItem("malinProfilNom");
+  const foyer = localStorage.getItem("malinProfilFoyer");
 
   if (nom) {
     document.getElementById("profilNom").value = nom;
   }
+
+  if (foyer) {
+    document.getElementById("profilFoyer").value = foyer;
+  }
 }
 
 chargerProfil();
+
   
 </script>
 <script src="https://www.gstatic.com/firebasejs/13.3.0/firebase-app-compat.js"></script>
