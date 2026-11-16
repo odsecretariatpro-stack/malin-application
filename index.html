@@ -1346,11 +1346,26 @@ function afficherEntretiens() {
     const carte = document.createElement("div");
     carte.className = "card";
 
-    carte.innerHTML = `
-      <h3>${entretien.categorie} : ${entretien.nom}</h3>
+   
+const prochaineDateStatut = new Date(entretien.date + "T12:00:00");
+prochaineDateStatut.setMonth(prochaineDateStatut.getMonth() + entretien.intervalle);
+prochaineDateStatut.setHours(0, 0, 0, 0);
+
+const aujourdHuiStatut = new Date();
+aujourdHuiStatut.setHours(0, 0, 0, 0);
+
+const joursRestants = Math.ceil(
+  (prochaineDateStatut - aujourdHuiStatut) / 86400000
+);
+
+const rond = joursRestants < 0 ? "🔴" : joursRestants <= 30 ? "🟠" : "🟢";
+
+carte.innerHTML = `
+      <h3>${rond} ${entretien.categorie} : ${entretien.nom}</h3>
+
       <p>Dernier entretien : ${new Date(entretien.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
       <p>Prochaine échéance : <strong>${dateFormatee}</strong></p>
-      <p>${retard ? "⚠️ Entretien en retard" : "✅ Échéance à venir"}</p>
+     <p>${joursRestants < 0 ? "⚠️ Entretien en retard" : joursRestants <= 30 ? "🟠 À prévoir dans les 30 jours" : "✅ À jour"}</p>
       <p>Coût : ${entretien.cout.toFixed(2)} €</p>
       <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
       <p>Notes : ${entretien.notes || "Aucune"}</p>
