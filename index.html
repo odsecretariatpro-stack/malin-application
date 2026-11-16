@@ -432,6 +432,17 @@ select {
     Votre liste est enregistrée automatiquement sur cet appareil.
   </div>
 
+<div class="card">
+  <h2>💾 Mes données MALIN</h2>
+  <p>Conservez une copie de vos informations pour pouvoir les retrouver en cas de besoin.</p>
+
+  <button class="clear-button" type="button" onclick="exporterListes()">💾 Sauvegarder mes données MALIN</button>
+
+  <button class="clear-button" type="button" onclick="document.getElementById('importListesFile').click()">📂 Restaurer mes données MALIN</button>
+
+  <input type="file" id="importListesFile" accept=".json,application/json" style="display:none" onchange="importerListes(event)">
+</div>
+
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
 
