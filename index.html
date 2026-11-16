@@ -1246,9 +1246,11 @@ function sauvegarderProfil() {
   }
 
   localStorage.setItem("malinProfilNom", nom);
-  localStorage.setItem("malinProfilFoyer", foyer);
+localStorage.setItem("malinProfilFoyer", foyer);
 
-  alert("Votre profil a bien été enregistré !");
+chargerProfil();
+
+alert("Votre profil a bien été enregistré !");
 }
 
 function chargerProfil() {
@@ -1365,10 +1367,11 @@ function afficherEntretiens() {
 
   if (!liste) return;
 
-  if (entretiens.length === 0) {
-    liste.innerHTML = "<p>Aucun entretien enregistré pour le moment.</p>";
-    return;
-  }
+ if (entretiens.length === 0) {
+  liste.innerHTML = "<p>Aucun entretien enregistré pour le moment.</p>";
+  actualiserAlertesEntretiens();
+  return;
+}
 
   liste.innerHTML = "";
 
