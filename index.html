@@ -1447,6 +1447,7 @@ carte.innerHTML = `
 
       <p>Dernier entretien : ${new Date(entretien.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
       <p>Prochaine échéance : <strong>${dateFormatee}</strong></p>
+     ${entretien.dateFin ? `<p>📄 Fin ou renouvellement du contrat : <strong>${new Date(entretien.dateFin + "T12:00:00").toLocaleDateString("fr-FR")}</strong></p>` : ""} 
      <p>${joursRestants < 0 ? "⚠️ Entretien en retard" : joursRestants <= 30 ? "🟠 À prévoir dans les 30 jours" : "✅ À jour"}</p>
       <p>Coût : ${entretien.cout.toFixed(2)} €</p>
       <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
