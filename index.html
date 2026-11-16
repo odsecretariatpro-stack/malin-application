@@ -1494,7 +1494,7 @@ function modifierEntretien(id) {
   const entretien = entretiens.find(e => e.id === id);
   if (!entretien) return;
 
-  const estContrat = entretien.categorie === "Contrat";
+  const estContrat = String(entretien.categorie).trim().toLowerCase() === "contrat";
 
   const nouveauNom = prompt(
     "Nom de l'équipement, du véhicule ou du contrat :",
