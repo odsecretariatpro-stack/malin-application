@@ -281,6 +281,9 @@ select {
 <section class="page active" id="accueil">
   <h1>Bonjour ! ☀️</h1>
   <p class="subtitle">Bienvenue dans votre espace MALIN.</p>
+  <div class="highlight" id="accueilFoyer">
+  👨‍👩‍👧‍👦 Votre foyer : informations à compléter dans Profil.
+</div>
 
   <div class="highlight">
     <strong>✨ Le quotidien devient plus simple</strong>
@@ -1141,6 +1144,12 @@ function chargerProfil() {
 
   document.getElementById("profilNom").value = nom;
   document.getElementById("profilFoyer").value = foyer;
+  const accueilFoyer = document.getElementById("accueilFoyer");
+
+if (accueilFoyer) {
+  accueilFoyer.textContent = foyer
+    ? "👨‍👩‍👧‍👦 Votre foyer : " + foyer + " personne(s)"
+    : "👨‍👩‍👧‍👦 Renseignez votre foyer dans Profil.";
 }
 
 chargerProfil();
