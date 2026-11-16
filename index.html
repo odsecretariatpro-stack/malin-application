@@ -190,11 +190,18 @@ select {
   color:var(--black);
 }
 
+
 .budget-grid {
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  margin-top:18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.budget-solde {
+  grid-column: 1 / -1;
+}
+
 }
 
 .budget-card {
