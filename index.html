@@ -1067,59 +1067,6 @@ function afficherBudget() {
 }
 
 
-  document.getElementById("totalRevenus").textContent = euros(revenus);
-  document.getElementById("totalDepenses").textContent = euros(depenses);
-  document.getElementById("totalEpargne").textContent = euros(epargne);
-  document.getElementById("soldeDisponible").textContent = euros(disponible);
-
-  const liste = document.getElementById("budgetListe");
-  liste.replaceChildren();
-
-  if (operations.length === 0) {
-    const vide = document.createElement("div");
-    vide.className = "empty";
-    vide.textContent = "Aucune opération pour ce mois.";
-    liste.appendChild(vide);
-    return;
-  }
-
-  const types = {
-    revenu: "💰 Revenu",
-    charge: "🏠 Charge fixe",
-    depense: "🛍️ Dépense",
-    epargne: "🐷 Épargne"
-  };
-
-  operations.forEach(o => {
-    const ligne = document.createElement("div");
-    ligne.className = "budget-operation";
-
-    const info = document.createElement("div");
-    info.className = "budget-operation-info";
-
-    const nom = document.createElement("strong");
-    nom.textContent = o.nom;
-
-    const detail = document.createElement("small");
-    detail.textContent = types[o.type] || "Opération";
-
-    info.append(nom, detail);
-
-    const montant = document.createElement("strong");
-    montant.textContent =
-      (o.type === "revenu" ? "+" : "-") + euros(o.montant);
-
-    const supprimer = document.createElement("button");
-    supprimer.className = "delete-button";
-    supprimer.textContent = "✕";
-    supprimer.setAttribute("aria-label", "Supprimer " + o.nom);
-    supprimer.addEventListener("click", () => supprimerOperation(o.id));
-
-    ligne.append(info, montant, supprimer);
-    liste.appendChild(ligne);
-  });
-}
-
 document.getElementById("budgetMonth").addEventListener(
   "change", afficherBudget
 );
