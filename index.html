@@ -1448,8 +1448,9 @@ carte.innerHTML = `
      <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
 
 ${historiqueHTML}
-      <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
-      <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
+     <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
+<button onclick="modifierEntretien('${entretien.id}')">✏️ Modifier</button>
+<button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
 
    liste.appendChild(carte);
