@@ -1360,7 +1360,16 @@ const joursRestants = Math.ceil(
 );
 
 const rond = joursRestants < 0 ? "🔴" : joursRestants <= 30 ? "🟠" : "🟢";
-
+const historiqueHTML = (entretien.historique || []).map(h => {
+  return `
+    <div class="historique-item">
+      <p>📅 Date : ${new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
+      <p>💶 Coût : ${Number(h.cout || 0).toFixed(2)} €</p>
+      <p>👨‍🔧 Professionnel : ${h.professionnel || "Non renseigné"}</p>
+      <p>📝 Notes : ${h.notes || "Aucune"}</p>
+    </div>
+  `;
+}).join("");
 carte.innerHTML = `
       <h3>${rond} ${entretien.categorie} : ${entretien.nom}</h3>
 
@@ -1372,14 +1381,7 @@ carte.innerHTML = `
       <p>Notes : ${entretien.notes || "Aucune"}</p>
      <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
 
-${(entretien.historique || []).map(h => `
-  <div class="historique-item">
-    <p>📅 Date : ${new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
-    <p>💶 Coût : ${Number(h.cout || 0).toFixed(2)} €</p>
-    <p>👨‍🔧 Professionnel : ${h.professionnel || "Non renseigné"}</p>
-    <p>📝 Notes : ${h.notes || "Aucune"}</p>
-  </div>
-`).join("")}
+${historiqueHTML}
       <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
       <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
