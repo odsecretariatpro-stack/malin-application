@@ -1370,6 +1370,7 @@ carte.innerHTML = `
       <p>Coût : ${entretien.cout.toFixed(2)} €</p>
       <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
       <p>Notes : ${entretien.notes || "Aucune"}</p>
+      <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
       <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
       <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
