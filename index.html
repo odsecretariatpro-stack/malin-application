@@ -1136,16 +1136,11 @@ function sauvegarderProfil() {
 }
 
 function chargerProfil() {
-  const nom = localStorage.getItem("malinProfilNom");
-  const foyer = localStorage.getItem("malinProfilFoyer");
+  const nom = localStorage.getItem("malinProfilNom") || "";
+  const foyer = localStorage.getItem("malinProfilFoyer") || "";
 
-  if (nom) {
-    document.getElementById("profilNom").value = nom;
-  }
-
-  if (foyer) {
-    document.getElementById("profilFoyer").value = foyer;
-  }
+  document.getElementById("profilNom").value = nom;
+  document.getElementById("profilFoyer").value = foyer;
 }
 
 chargerProfil();
