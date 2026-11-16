@@ -1402,16 +1402,21 @@ const joursRestants = Math.ceil(
 );
 
 const rond = joursRestants < 0 ? "🔴" : joursRestants <= 30 ? "🟠" : "🟢";
-const historiqueHTML = (entretien.historique || []).map(h => {
-  return `
-    <div class="historique-item">
-      <p>📅 Date : ${new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
-      <p>💶 Coût : ${Number(h.cout || 0).toFixed(2)} €</p>
-      <p>👨‍🔧 Professionnel : ${h.professionnel || "Non renseigné"}</p>
-      <p>📝 Notes : ${h.notes || "Aucune"}</p>
-    </div>
-  `;
-}).join("");
+
+const historiqueHTML = (entretien.historique || []).length
+  ? entretien.historique.map((h, index) => {
+      return `
+        <div class="historique-item">
+          <h4>🔧 Intervention n°${index + 1}</h4>
+          <p>📅 <strong>Date :</strong> ${new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
+          <p>💶 <strong>Coût :</strong> ${Number(h.cout || 0).toFixed(2)} €</p>
+          <p>👨‍🔧 <strong>Professionnel :</strong> ${h.professionnel || "Non renseigné"}</p>
+          <p>📝 <strong>Notes :</strong> ${h.notes || "Aucune"}</p>
+        </div>
+      `;
+    }).join("")
+  : "<p>Aucune intervention passée pour le moment.</p>";
+
 carte.innerHTML = `
       <h3>${rond} ${entretien.categorie} : ${entretien.nom}</h3>
 
