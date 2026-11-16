@@ -432,16 +432,6 @@ select {
     Votre liste est enregistrée automatiquement sur cet appareil.
   </div>
 
-<div class="card">
-  <h2>💾 Mes données MALIN</h2>
-  <p>Conservez une copie de vos informations pour pouvoir les retrouver en cas de besoin.</p>
-
-  <button class="clear-button" type="button" onclick="exporterListes()">💾 Sauvegarder mes données MALIN</button>
-
-  <button class="clear-button" type="button" onclick="document.getElementById('importListesFile').click()">📂 Restaurer mes données MALIN</button>
-
-  <input type="file" id="importListesFile" accept=".json,application/json" style="display:none" onchange="importerListes(event)">
-</div>
 
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
@@ -624,23 +614,37 @@ select {
 </section>
 
 
+
 <section class="page" id="profil">
   <h1>👤 Mon profil</h1>
   <p class="subtitle">Personnalisez votre application MALIN.</p>
 
   <div class="card">
     <h2>Mes informations</h2>
+
     <label for="profilNom">Mon prénom ou pseudonyme</label>
     <input type="text" id="profilNom" placeholder="Comment souhaitez-vous être appelé ?">
-    
-<label for="profilFoyer">Nombre de personnes dans mon foyer</label>
-<input type="number" id="profilFoyer" min="1" max="20" placeholder="Exemple : 4">
+
+    <label for="profilFoyer">Nombre de personnes dans mon foyer</label>
+    <input type="number" id="profilFoyer" min="1" max="20" placeholder="Exemple : 4">
 
     <button onclick="sauvegarderProfil()">💾 Enregistrer mon profil</button>
   </div>
 
+  <div class="card">
+    <h2>💾 Mes données MALIN</h2>
+    <p>Conservez une copie de vos informations pour pouvoir les retrouver en cas de besoin.</p>
+
+    <button class="clear-button" type="button" onclick="exporterListes()">💾 Sauvegarder mes données MALIN</button>
+
+    <button class="clear-button" type="button" onclick="document.getElementById('importListesFile').click()">📂 Restaurer mes données MALIN</button>
+
+    <input type="file" id="importListesFile" accept=".json,application/json" style="display:none" onchange="importerListes(event)">
+  </div>
+
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
+
 
 </main>
 
