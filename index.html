@@ -149,6 +149,23 @@ input {
   gap:8px;color:#777;font-size:13px;
   margin:12px 0;
 }
+
+.list-management {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+  margin:12px 0 18px;
+}
+.list-management .clear-button {
+  margin-top:0;
+  width:100%;
+  background:#F7F1E7;
+  font-weight:bold;
+}
+.active-list-title {
+  display:block;
+  margin-top:8px;
+}
 .clear-button {
   margin-top:14px;background:none;
   border:1px solid #DED4C5;border-radius:10px;
@@ -319,7 +336,13 @@ select {
   </div>
 
   <div class="panel">
-    <strong>Ma liste de courses</strong>
+    <strong>Mes listes de courses</strong>
+    <div class="list-management">
+      <label class="field-label" for="courseListSelect">Choisir une liste</label>
+      <select id="courseListSelect" onchange="changerListeActive(this.value)"></select>
+      <button class="clear-button" type="button" onclick="creerListe()">＋ Créer une nouvelle liste</button>
+    </div>
+    <strong class="active-list-title" id="activeListTitle">Courses alimentaires</strong>
     <div class="course-summary">
       <span id="remainingCount">0 à acheter</span>
       <span id="boughtCount">0 acheté</span>
@@ -449,26 +472,149 @@ select {
 </footer>
 
 <script>
-const STORAGE_KEY = "malin_courses_v1";
+const STORAGE_KEY = "malin_courses_v1"; // Ancienne clé conservée pour récupérer les courses existantes.
+const LISTS_STORAGE_KEY = "malin_courses_lists_v1";
+const ACTIVE_LIST_STORAGE_KEY = "malin_courses_active_list_v1";
+
+let listesCourses = [];
+let listeActiveId = null;
 let produits = [];
+
+function creerIdListe() {
+  return "liste-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+}
+
+function listeActive() {
+  return listesCourses.find(liste => liste.id === listeActiveId) || null;
+}
+
+function sauvegarderToutesLesListes() {
+  try {
+    localStorage.setItem(LISTS_STORAGE_KEY, JSON.stringify(listesCourses));
+    if (listeActiveId) {
+      localStorage.setItem(ACTIVE_LIST_STORAGE_KEY, listeActiveId);
+    }
+  } catch (e) {
+    alert("La sauvegarde des listes n'a pas fonctionné sur cet appareil.");
+  }
+}
 
 function chargerProduits() {
   try {
-    const donnees = localStorage.getItem(STORAGE_KEY);
-    produits = donnees ? JSON.parse(donnees) : [];
-    if (!Array.isArray(produits)) produits = [];
+    const donneesListes = localStorage.getItem(LISTS_STORAGE_KEY);
+    const listesEnregistrees = donneesListes ? JSON.parse(donneesListes) : null;
+
+    if (Array.isArray(listesEnregistrees) && listesEnregistrees.length > 0) {
+      listesCourses = listesEnregistrees
+        .filter(liste => liste && typeof liste.id === "string" && typeof liste.nom === "string")
+        .map(liste => ({
+          id: liste.id,
+          nom: liste.nom,
+          produits: Array.isArray(liste.produits) ? liste.produits : []
+        }));
+    }
   } catch (e) {
-    produits = [];
+    listesCourses = [];
   }
+
+  // Première ouverture de la nouvelle version : récupération de l'ancienne liste.
+  if (listesCourses.length === 0) {
+    let anciensProduits = [];
+    try {
+      const anciennesDonnees = localStorage.getItem(STORAGE_KEY);
+      anciensProduits = anciennesDonnees ? JSON.parse(anciennesDonnees) : [];
+      if (!Array.isArray(anciensProduits)) anciensProduits = [];
+    } catch (e) {
+      anciensProduits = [];
+    }
+
+    listesCourses = [{
+      id: creerIdListe(),
+      nom: "Courses alimentaires",
+      produits: anciensProduits
+    }];
+  }
+
+  let ancienneListeActive = null;
+  try {
+    ancienneListeActive = localStorage.getItem(ACTIVE_LIST_STORAGE_KEY);
+  } catch (e) {
+    ancienneListeActive = null;
+  }
+
+  listeActiveId = listesCourses.some(liste => liste.id === ancienneListeActive)
+    ? ancienneListeActive
+    : listesCourses[0].id;
+
+  const active = listeActive();
+  produits = active ? active.produits : [];
+
+  sauvegarderToutesLesListes();
   afficherProduits();
 }
 
 function sauvegarderProduits() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(produits));
-  } catch (e) {
-    alert("La sauvegarde n'a pas fonctionné sur cet appareil.");
+  const active = listeActive();
+  if (!active) return;
+  active.produits = produits;
+  sauvegarderToutesLesListes();
+}
+
+function actualiserSelecteurListes() {
+  const selecteur = document.getElementById("courseListSelect");
+  const titre = document.getElementById("activeListTitle");
+  if (!selecteur || !titre) return;
+
+  selecteur.replaceChildren();
+
+  listesCourses.forEach(liste => {
+    const option = document.createElement("option");
+    option.value = liste.id;
+    option.textContent = liste.nom;
+    option.selected = liste.id === listeActiveId;
+    selecteur.appendChild(option);
+  });
+
+  const active = listeActive();
+  titre.textContent = active ? active.nom : "Mes courses";
+}
+
+function changerListeActive(id) {
+  const nouvelleListe = listesCourses.find(liste => liste.id === id);
+  if (!nouvelleListe) return;
+
+  listeActiveId = id;
+  produits = nouvelleListe.produits;
+  sauvegarderToutesLesListes();
+  afficherProduits();
+}
+
+function creerListe() {
+  const nomSaisi = prompt("Quel nom souhaitez-vous donner à cette liste ?");
+  if (nomSaisi === null) return;
+
+  const nom = nomSaisi.trim();
+  if (!nom) {
+    alert("Donnez un nom à votre liste.");
+    return;
   }
+
+  if (listesCourses.some(liste => liste.nom.toLocaleLowerCase("fr") === nom.toLocaleLowerCase("fr"))) {
+    alert("Une liste porte déjà ce nom. Choisissez un autre nom.");
+    return;
+  }
+
+  const nouvelleListe = {
+    id: creerIdListe(),
+    nom: nom,
+    produits: []
+  };
+
+  listesCourses.push(nouvelleListe);
+  listeActiveId = nouvelleListe.id;
+  produits = nouvelleListe.produits;
+  sauvegarderToutesLesListes();
+  afficherProduits();
 }
 
 function ajouterProduit() {
@@ -531,6 +677,8 @@ function supprimerAchats() {
 }
 
 function afficherProduits() {
+  actualiserSelecteurListes();
+
   const liste = document.getElementById("productList");
   const restants = produits.filter(p => !p.achete).length;
   const achetes = produits.filter(p => p.achete).length;
