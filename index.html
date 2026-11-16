@@ -744,13 +744,15 @@ function supprimerListe() {
   afficherProduits();
 }
 
+
 function exporterListes() {
   const sauvegarde = {
-    version: 3,
+    version: 4,
     date: new Date().toISOString(),
     listeActiveId: listeActiveId,
     listes: listesCourses,
     budget: operationsBudget,
+    entretiens: entretiens,
     profil: {
       nom: localStorage.getItem("malinProfilNom") || "",
       foyer: localStorage.getItem("malinProfilFoyer") || ""
@@ -771,6 +773,7 @@ function exporterListes() {
 
   URL.revokeObjectURL(url);
 }
+
 
 function importerListes(event) {
   const fichier = event.target.files[0];
@@ -836,6 +839,30 @@ if (Array.isArray(sauvegarde.budget)) {
   operationsBudget = sauvegarde.budget;
   sauvegarderBudget();
 }  
+
+if (sauvegarde.entretiens !== undefined) {
+  const entretiensValides = Array.isArray(sauvegarde.entretiens) &&
+    sauvegarde.entretiens.every(e =>
+      e &&
+      typeof e.id === "string" &&
+      typeof e.categorie === "string" &&
+      typeof e.nom === "string" &&
+      typeof e.date === "string" &&
+      Number.isInteger(e.intervalle) &&
+      e.intervalle >= 1 &&
+      Number.isFinite(e.cout) &&
+      typeof e.professionnel === "string" &&
+      typeof e.notes === "string"
+    );
+
+  if (!entretiensValides) {
+    throw new Error("Entretiens invalides");
+  }
+
+  entretiens = sauvegarde.entretiens;
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+  afficherEntretiens();
+}
       
 if (sauvegarde.profil) {
   if (typeof sauvegarde.profil.nom === "string") {
