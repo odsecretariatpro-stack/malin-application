@@ -1195,7 +1195,101 @@ if (accueilFoyer) {
 }
 chargerProfil();
 
-  
+
+let entretiens = JSON.parse(localStorage.getItem("malinEntretiens") || "[]");
+
+function ajouterEntretien() {
+  const categorie = document.getElementById("entretienCategorie").value;
+  const nom = document.getElementById("entretienNom").value.trim();
+  const date = document.getElementById("entretienDate").value;
+  const intervalle = Number(document.getElementById("entretienIntervalle").value);
+  const cout = Number(document.getElementById("entretienCout").value) || 0;
+  const professionnel = document.getElementById("entretienProfessionnel").value.trim();
+  const notes = document.getElementById("entretienNotes").value.trim();
+
+  if (!nom || !date || !intervalle || intervalle < 1) {
+    alert("Veuillez renseigner le nom, la date et la fréquence.");
+    return;
+  }
+
+  const nouvelEntretien = {
+    id: Date.now().toString(),
+    categorie,
+    nom,
+    date,
+    intervalle,
+    cout,
+    professionnel,
+    notes
+  };
+
+  entretiens.push(nouvelEntretien);
+
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+
+  afficherEntretiens();
+
+  document.getElementById("entretienNom").value = "";
+  document.getElementById("entretienDate").value = "";
+  document.getElementById("entretienIntervalle").value = "";
+  document.getElementById("entretienCout").value = "";
+  document.getElementById("entretienProfessionnel").value = "";
+  document.getElementById("entretienNotes").value = "";
+
+  alert("Entretien enregistré !");
+}
+ 
+function afficherEntretiens() {
+  const liste = document.getElementById("listeEntretiens");
+
+  if (!liste) return;
+
+  if (entretiens.length === 0) {
+    liste.innerHTML = "<p>Aucun entretien enregistré pour le moment.</p>";
+    return;
+  }
+
+  liste.innerHTML = "";
+
+  entretiens.forEach(entretien => {
+    const prochaineDate = new Date(entretien.date + "T12:00:00");
+    prochaineDate.setMonth(prochaineDate.getMonth() + entretien.intervalle);
+
+    const aujourdHui = new Date();
+    aujourdHui.setHours(0, 0, 0, 0);
+
+    const retard = prochaineDate < aujourdHui;
+
+    const dateFormatee = prochaineDate.toLocaleDateString("fr-FR");
+
+    const carte = document.createElement("div");
+    carte.className = "card";
+
+    carte.innerHTML = `
+      <h3>${entretien.categorie} : ${entretien.nom}</h3>
+      <p>Dernier entretien : ${new Date(entretien.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
+      <p>Prochaine échéance : <strong>${dateFormatee}</strong></p>
+      <p>${retard ? "⚠️ Entretien en retard" : "✅ Échéance à venir"}</p>
+      <p>Coût : ${entretien.cout.toFixed(2)} €</p>
+      <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
+      <p>Notes : ${entretien.notes || "Aucune"}</p>
+      <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
+    `;
+
+    liste.appendChild(carte);
+  });
+}
+
+function supprimerEntretien(id) {
+  if (!confirm("Voulez-vous vraiment supprimer cet entretien ?")) return;
+
+  entretiens = entretiens.filter(entretien => entretien.id !== id);
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+  afficherEntretiens();
+}
+
+afficherEntretiens();
+ 
 </script>
 <script src="https://www.gstatic.com/firebasejs/13.3.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/13.3.0/firebase-messaging-compat.js"></script>
