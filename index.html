@@ -1459,6 +1459,50 @@ ${historiqueHTML}
   actualiserAlertesEntretiens();
 }
 
+function modifierEntretien(id) {
+  const entretien = entretiens.find(e => e.id === id);
+  if (!entretien) return;
+
+  const nouveauNom = prompt("Nom de l'équipement ou du véhicule :", entretien.nom);
+  if (nouveauNom === null) return;
+
+  const nouvelleDate = prompt("Date du dernier entretien (AAAA-MM-JJ) :", entretien.date);
+  if (nouvelleDate === null) return;
+
+  const nouvelleFrequence = prompt("Fréquence en mois :", entretien.intervalle);
+  if (nouvelleFrequence === null) return;
+
+  const nouveauCout = prompt("Coût de l'entretien (€) :", entretien.cout);
+  if (nouveauCout === null) return;
+
+  const nouveauProfessionnel = prompt("Professionnel :", entretien.professionnel || "");
+  if (nouveauProfessionnel === null) return;
+
+  const nouvellesNotes = prompt("Notes :", entretien.notes || "");
+  if (nouvellesNotes === null) return;
+
+  if (!nouveauNom.trim() || !nouvelleDate ||
+      !Number.isInteger(Number(nouvelleFrequence)) ||
+      Number(nouvelleFrequence) < 1 ||
+      !Number.isFinite(Number(nouveauCout)) ||
+      Number(nouveauCout) < 0) {
+    alert("Certaines informations sont invalides. Aucune modification enregistrée.");
+    return;
+  }
+
+  entretien.nom = nouveauNom.trim();
+  entretien.date = nouvelleDate;
+  entretien.intervalle = Number(nouvelleFrequence);
+  entretien.cout = Number(nouveauCout);
+  entretien.professionnel = nouveauProfessionnel.trim();
+  entretien.notes = nouvellesNotes.trim();
+
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+  afficherEntretiens();
+
+  alert("Entretien modifié avec succès !");
+}
+
 function supprimerEntretien(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet entretien ?")) return;
 
