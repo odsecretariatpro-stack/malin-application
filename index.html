@@ -1430,8 +1430,16 @@ if (!(entretien.categorie === "Contrat" && entretien.dateFin)) {
     carte.className = "card";
 
    
-const prochaineDateStatut = new Date(entretien.date + "T12:00:00");
-prochaineDateStatut.setMonth(prochaineDateStatut.getMonth() + entretien.intervalle);
+const prochaineDateStatut = entretien.categorie === "Contrat" && entretien.dateFin
+  ? new Date(entretien.dateFin + "T12:00:00")
+  : new Date(entretien.date + "T12:00:00");
+
+if (!(entretien.categorie === "Contrat" && entretien.dateFin)) {
+  prochaineDateStatut.setMonth(
+    prochaineDateStatut.getMonth() + entretien.intervalle
+  );
+}
+
 prochaineDateStatut.setHours(0, 0, 0, 0);
 
 const aujourdHuiStatut = new Date();
