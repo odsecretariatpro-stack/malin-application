@@ -732,7 +732,7 @@ function importerListes(event) {
   const fichier = event.target.files[0];
   if (!fichier) return;
 
-  if (!confirm("Cette restauration remplacera tes listes de courses et ton budget si le fichier en contient. Continuer ?")) {
+ if (!confirm("Cette restauration remplacera tes listes de courses, ton budget et ton profil si le fichier en contient. Continuer ?")) {
     event.target.value = "";
     return;
   }
