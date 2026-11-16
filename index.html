@@ -1271,6 +1271,54 @@ function ajouterEntretien() {
 
   alert("Entretien enregistré !");
 }
+
+function actualiserAlertesEntretiens() {
+  const zone = document.getElementById("alertesEntretiens");
+  if (!zone) return;
+
+  zone.replaceChildren();
+
+  if (entretiens.length === 0) {
+    zone.textContent = "Aucun entretien enregistré.";
+    return;
+  }
+
+  const aujourdHui = new Date();
+  aujourdHui.setHours(0, 0, 0, 0);
+
+  const groupes = {
+    retard: [],
+    bientot: [],
+    aJour: []
+  };
+
+  entretiens.forEach(entretien => {
+    const date = new Date(entretien.date + "T12:00:00");
+    date.setMonth(date.getMonth() + entretien.intervalle);
+    date.setHours(0, 0, 0, 0);
+
+    const jours = Math.ceil((date - aujourdHui) / 86400000);
+
+    if (jours < 0) {
+      groupes.retard.push(entretien.nom);
+    } else if (jours <= 30) {
+      groupes.bientot.push(entretien.nom);
+    } else {
+      groupes.aJour.push(entretien.nom);
+    }
+  });
+
+  function ajouterGroupe(titre, emoji, elements) {
+    const bloc = document.createElement("p");
+    bloc.textContent = emoji + " " + titre + " : " +
+      (elements.length ? elements.join(", ") : "Aucun");
+    zone.appendChild(bloc);
+  }
+
+  ajouterGroupe("En retard", "🔴", groupes.retard);
+  ajouterGroupe("À prévoir dans les 30 jours", "🟠", groupes.bientot);
+  ajouterGroupe("À jour", "🟢", groupes.aJour);
+}
  
 function afficherEntretiens() {
   const liste = document.getElementById("listeEntretiens");
@@ -1309,8 +1357,10 @@ function afficherEntretiens() {
       <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
 
-    liste.appendChild(carte);
+   liste.appendChild(carte);
   });
+
+  actualiserAlertesEntretiens();
 }
 
 function supprimerEntretien(id) {
