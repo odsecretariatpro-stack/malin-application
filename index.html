@@ -381,24 +381,30 @@ select {
     <input type="month" id="budgetMonth">
   </div>
 
-  <div class="budget-grid">
-    <div class="budget-card">
-      <small>Mes revenus</small>
-      <strong id="totalRevenus">0,00 €</strong>
-    </div>
-    <div class="budget-card">
-      <small>Mes dépenses</small>
-      <strong id="totalDepenses">0,00 €</strong>
-    </div>
-    <div class="budget-card">
-      <small>Mon épargne</small>
-      <strong id="totalEpargne">0,00 €</strong>
-    </div>
-    <div class="budget-card budget-solde">
-      <small>Mon disponible</small>
-      <strong id="soldeDisponible">0,00 €</strong>
-    </div>
+
+<div class="budget-grid">
+  <div class="budget-card">
+    <small>Mes revenus</small>
+    <strong id="totalRevenus">0,00 €</strong>
   </div>
+  <div class="budget-card">
+    <small>Mes charges fixes</small>
+    <strong id="totalCharges">0,00 €</strong>
+  </div>
+  <div class="budget-card">
+    <small>Mes dépenses</small>
+    <strong id="totalDepenses">0,00 €</strong>
+  </div>
+  <div class="budget-card">
+    <small>Mon épargne</small>
+    <strong id="totalEpargne">0,00 €</strong>
+  </div>
+  <div class="budget-card budget-solde">
+    <small>Mon disponible</small>
+    <strong id="soldeDisponible">0,00 €</strong>
+  </div>
+</div>
+
 
   <div class="panel">
     <strong>Ajouter une opération</strong>
@@ -973,6 +979,7 @@ function supprimerOperation(id) {
   afficherBudget();
 }
 
+
 function afficherBudget() {
   const mois = document.getElementById("budgetMonth").value;
 
@@ -982,20 +989,79 @@ function afficherBudget() {
     .filter(o => o.type === "revenu")
     .reduce((total, o) => total + o.montant, 0);
 
+  const charges = operations
+    .filter(o => o.type === "charge")
+    .reduce((total, o) => total + o.montant, 0);
+
   const depenses = operations
-    .filter(o => o.type === "charge" || o.type === "depense")
+    .filter(o => o.type === "depense")
     .reduce((total, o) => total + o.montant, 0);
 
   const epargne = operations
     .filter(o => o.type === "epargne")
     .reduce((total, o) => total + o.montant, 0);
 
-  const disponible = revenus - depenses - epargne;
+  const disponible = revenus - charges - depenses - epargne;
 
   const euros = montant => montant.toLocaleString("fr-FR", {
     style: "currency",
     currency: "EUR"
   });
+
+  document.getElementById("totalRevenus").textContent = euros(revenus);
+  document.getElementById("totalCharges").textContent = euros(charges);
+  document.getElementById("totalDepenses").textContent = euros(depenses);
+  document.getElementById("totalEpargne").textContent = euros(epargne);
+  document.getElementById("soldeDisponible").textContent = euros(disponible);
+
+  const liste = document.getElementById("budgetListe");
+  liste.replaceChildren();
+
+  if (operations.length === 0) {
+    const vide = document.createElement("div");
+    vide.className = "empty";
+    vide.textContent = "Aucune opération pour ce mois.";
+    liste.appendChild(vide);
+    return;
+  }
+
+  const types = {
+    revenu: "💰 Revenu",
+    charge: "🏠 Charge fixe",
+    depense: "🛍️ Dépense",
+    epargne: "🐷 Épargne"
+  };
+
+  operations.forEach(o => {
+    const ligne = document.createElement("div");
+    ligne.className = "budget-operation";
+
+    const info = document.createElement("div");
+    info.className = "budget-operation-info";
+
+    const nom = document.createElement("strong");
+    nom.textContent = o.nom;
+
+    const detail = document.createElement("small");
+    detail.textContent = types[o.type] || "Opération";
+
+    info.append(nom, detail);
+
+    const montant = document.createElement("strong");
+    montant.textContent =
+      (o.type === "revenu" ? "+" : "-") + euros(o.montant);
+
+    const supprimer = document.createElement("button");
+    supprimer.className = "delete-button";
+    supprimer.textContent = "✕";
+    supprimer.setAttribute("aria-label", "Supprimer " + o.nom);
+    supprimer.addEventListener("click", () => supprimerOperation(o.id));
+
+    ligne.append(info, montant, supprimer);
+    liste.appendChild(ligne);
+  });
+}
+
 
   document.getElementById("totalRevenus").textContent = euros(revenus);
   document.getElementById("totalDepenses").textContent = euros(depenses);
