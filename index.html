@@ -1411,8 +1411,13 @@ function afficherEntretiens() {
   liste.innerHTML = "";
 
   entretiens.forEach(entretien => {
-    const prochaineDate = new Date(entretien.date + "T12:00:00");
-    prochaineDate.setMonth(prochaineDate.getMonth() + entretien.intervalle);
+   const prochaineDate = entretien.categorie === "Contrat" && entretien.dateFin
+  ? new Date(entretien.dateFin + "T12:00:00")
+  : new Date(entretien.date + "T12:00:00");
+
+if (!(entretien.categorie === "Contrat" && entretien.dateFin)) {
+  prochaineDate.setMonth(prochaineDate.getMonth() + entretien.intervalle);
+}
 
     const aujourdHui = new Date();
     aujourdHui.setHours(0, 0, 0, 0);
