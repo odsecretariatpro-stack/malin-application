@@ -342,7 +342,10 @@ select {
       <select id="courseListSelect" onchange="changerListeActive(this.value)"></select>
       <button class="clear-button" type="button" onclick="creerListe()">＋ Créer une nouvelle liste</button>
    <button class="clear-button" type="button" onclick="renommerListe()">✎ Renommer cette liste</button>
-<button class="clear-button" type="button" onclick="supprimerListe()">🗑 Supprimer cette liste</button>   
+<button class="clear-button" type="button" onclick="supprimerListe()">🗑 Supprimer cette liste</button> 
+    <button class="clear-button" type="button" onclick="exporterListes()">💾 Sauvegarder mes listes</button>
+<button class="clear-button" type="button" onclick="document.getElementById('importListesFile').click()">📂 Restaurer mes listes</button>
+<input type="file" id="importListesFile" accept=".json,application/json" style="display:none" onchange="importerListes(event)">  
     </div>
     <strong class="active-list-title" id="activeListTitle">Courses alimentaires</strong>
     <div class="course-summary">
@@ -663,6 +666,86 @@ function supprimerListe() {
 
   sauvegarderToutesLesListes();
   afficherProduits();
+}
+  function exporterListes() {
+  const sauvegarde = {
+    version: 1,
+    date: new Date().toISOString(),
+    listeActiveId: listeActiveId,
+    listes: listesCourses
+  };
+
+  const fichier = new Blob(
+    [JSON.stringify(sauvegarde, null, 2)],
+    { type: "application/json" }
+  );
+
+  const lien = document.createElement("a");
+  const url = URL.createObjectURL(fichier);
+
+  lien.href = url;
+  lien.download = "MALIN-sauvegarde-courses.json";
+  lien.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importerListes(event) {
+  const fichier = event.target.files[0];
+  if (!fichier) return;
+
+  if (!confirm("Importer cette sauvegarde remplacera toutes les listes actuelles. Continuer ?")) {
+    event.target.value = "";
+    return;
+  }
+
+  const lecteur = new FileReader();
+
+  lecteur.onload = function() {
+    try {
+      const sauvegarde = JSON.parse(lecteur.result);
+
+      if (!Array.isArray(sauvegarde.listes) || sauvegarde.listes.length === 0) {
+        throw new Error("Fichier invalide");
+      }
+
+      const listesValides = sauvegarde.listes.every(l =>
+        l &&
+        typeof l.id === "string" &&
+        typeof l.nom === "string" &&
+        Array.isArray(l.produits) &&
+        l.produits.every(p =>
+          p &&
+          typeof p.id === "string" &&
+          typeof p.nom === "string" &&
+          Number.isInteger(p.quantite) &&
+          typeof p.achete === "boolean"
+        )
+      );
+
+      if (!listesValides) {
+        throw new Error("Données invalides");
+      }
+
+      listesCourses = sauvegarde.listes;
+      listeActiveId = listesCourses.some(l => l.id === sauvegarde.listeActiveId)
+        ? sauvegarde.listeActiveId
+        : listesCourses[0].id;
+
+      produits = listesCourses.find(l => l.id === listeActiveId).produits;
+
+      sauvegarderToutesLesListes();
+      afficherProduits();
+
+      alert("Sauvegarde MALIN importée avec succès !");
+    } catch (e) {
+      alert("Impossible de lire cette sauvegarde. Vérifiez le fichier.");
+    }
+
+    event.target.value = "";
+  };
+
+  lecteur.readAsText(fichier);
 }
   function ajouterProduit() {
   const nom = document.getElementById("productInput").value.trim();
