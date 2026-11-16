@@ -1299,6 +1299,7 @@ function ajouterEntretien() {
   const categorie = document.getElementById("entretienCategorie").value;
   const nom = document.getElementById("entretienNom").value.trim();
   const date = document.getElementById("entretienDate").value;
+  const dateFin = document.getElementById("entretienFin").value;
   const intervalle = Number(document.getElementById("entretienIntervalle").value);
   const cout = Number(document.getElementById("entretienCout").value) || 0;
   const professionnel = document.getElementById("entretienProfessionnel").value.trim();
@@ -1314,7 +1315,8 @@ function ajouterEntretien() {
     categorie,
     nom,
     date,
-    intervalle,
+dateFin,
+intervalle,
     cout,
         professionnel,
     notes,
