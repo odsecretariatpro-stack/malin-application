@@ -1254,6 +1254,7 @@ function ajouterEntretien() {
     cout,
     professionnel,
     notes
+    historique: []
   };
 
   entretiens.push(nouvelEntretien);
@@ -1395,13 +1396,26 @@ function marquerEntretienEffectue(id) {
     return;
   }
 
-  entretien.date = new Date().toISOString().slice(0, 10);
+  const dateDuJour = new Date().toISOString().slice(0, 10);
+
+  if (!Array.isArray(entretien.historique)) {
+    entretien.historique = [];
+  }
+
+  entretien.historique.push({
+    date: dateDuJour,
+    cout: entretien.cout,
+    professionnel: entretien.professionnel,
+    notes: entretien.notes
+  });
+
+  entretien.date = dateDuJour;
 
   localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
 
   afficherEntretiens();
 
-  alert("Entretien mis à jour !");
+  alert("Entretien mis à jour et ajouté à l'historique !");
 }
 afficherEntretiens();
  
