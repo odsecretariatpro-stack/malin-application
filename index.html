@@ -1510,7 +1510,10 @@ ${entretien.categorie === "Contrat"
      <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
 
 ${historiqueHTML}
-     <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
+ ${entretien.categorie === "Contrat"
+  ? `<button onclick="renouvelerContrat('${entretien.id}')">🔄 Renouveler le contrat</button>`
+  : `<button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>`
+}
 <button onclick="modifierEntretien('${entretien.id}')">✏️ Modifier</button>
 <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
@@ -1619,6 +1622,49 @@ function supprimerEntretien(id) {
   localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
   afficherEntretiens();
 }
+
+function renouvelerContrat(id) {
+  const entretien = entretiens.find(e => e.id === id);
+  if (!entretien || entretien.categorie !== "Contrat") return;
+
+  const nouvelleDate = prompt(
+    "Nouvelle date de fin ou de renouvellement (JJ/MM/AAAA) :",
+    ""
+  );
+
+  if (nouvelleDate === null) return;
+
+  const dateConvertie = convertirDate(nouvelleDate);
+
+  if (!dateConvertie) {
+    alert("Date invalide. Utilisez le format JJ/MM/AAAA.");
+    return;
+  }
+
+  const ancienneDate = entretien.dateFin;
+
+  if (!Array.isArray(entretien.historique)) {
+    entretien.historique = [];
+  }
+
+  entretien.historique.push({
+    date: new Date().toISOString().slice(0, 10),
+    cout: entretien.cout,
+    professionnel: entretien.professionnel,
+    notes: "Contrat renouvelé. Ancienne échéance : " +
+      formaterDateFR(ancienneDate) +
+      " — Nouvelle échéance : " + nouvelleDate
+  });
+
+  entretien.dateFin = dateConvertie;
+
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+
+  afficherEntretiens();
+
+  alert("Contrat renouvelé et historique conservé !");
+}
+  
 function marquerEntretienEffectue(id) {
   const entretien = entretiens.find(e => e.id === id);
 
