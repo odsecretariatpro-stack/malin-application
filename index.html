@@ -788,10 +788,23 @@ function importerListes(event) {
 
       produits = listesCourses.find(l => l.id === listeActiveId).produits;
 
-      if (Array.isArray(sauvegarde.budget)) {
-        operationsBudget = sauvegarde.budget;
-        sauvegarderBudget();
-      }
+if (Array.isArray(sauvegarde.budget)) {
+  operationsBudget = sauvegarde.budget;
+  sauvegarderBudget();
+}  
+      
+if (sauvegarde.profil) {
+  if (typeof sauvegarde.profil.nom === "string") {
+    localStorage.setItem("malinProfilNom", sauvegarde.profil.nom);
+  }
+
+  if (typeof sauvegarde.profil.foyer === "string") {
+    localStorage.setItem("malinProfilFoyer", sauvegarde.profil.foyer);
+  }
+
+  chargerProfil();
+}
+
 
       sauvegarderToutesLesListes();
       afficherProduits();
