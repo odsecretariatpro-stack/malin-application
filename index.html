@@ -466,12 +466,53 @@ select {
 </section>
 
 
+
 <section class="page" id="maison">
-  <h1>🏡 Ma maison</h1>
-  <p class="subtitle">Une maison mieux organisée.</p>
-  <p>Vos tâches et vos suivis arriveront dans une prochaine étape.</p>
+  <h1>🏡 Mon carnet d'entretien</h1>
+  <p class="subtitle">Gardez un œil sur l'entretien de votre maison, de vos véhicules et de vos équipements.</p>
+
+  <div class="card">
+    <h2>➕ Ajouter un entretien</h2>
+
+    <label for="entretienCategorie">Catégorie</label>
+    <select id="entretienCategorie">
+      <option value="Maison">🏠 Maison</option>
+      <option value="Voiture">🚗 Voiture</option>
+      <option value="Équipement">🔧 Équipement</option>
+      <option value="Autre">📋 Autre échéance</option>
+    </select>
+
+    <label for="entretienNom">Nom de l'équipement ou du véhicule</label>
+    <input type="text" id="entretienNom" placeholder="Ex : chaudière, voiture familiale...">
+
+    <label for="entretienDate">Date du dernier entretien</label>
+    <input type="date" id="entretienDate">
+
+    <label for="entretienIntervalle">Fréquence (en mois)</label>
+    <input type="number" id="entretienIntervalle" min="1" placeholder="Ex : 12">
+
+    <label for="entretienCout">Coût de l'entretien (€)</label>
+    <input type="number" id="entretienCout" min="0" step="0.01" placeholder="Ex : 150">
+
+    <label for="entretienProfessionnel">Professionnel (facultatif)</label>
+    <input type="text" id="entretienProfessionnel" placeholder="Nom de l'entreprise">
+
+    <label for="entretienNotes">Notes (facultatif)</label>
+    <textarea id="entretienNotes" placeholder="Informations complémentaires..."></textarea>
+
+    <button onclick="ajouterEntretien()">💾 Enregistrer l'entretien</button>
+  </div>
+
+  <div class="card">
+    <h2>📅 Mes entretiens</h2>
+    <div id="listeEntretiens">
+      <p>Vos entretiens enregistrés apparaîtront ici.</p>
+    </div>
+  </div>
+
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
+
 
 <section class="page" id="astuces">
   <h1>💡 Mes astuces</h1>
