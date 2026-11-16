@@ -1305,7 +1305,11 @@ function ajouterEntretien() {
   const professionnel = document.getElementById("entretienProfessionnel").value.trim();
   const notes = document.getElementById("entretienNotes").value.trim();
 
-  if (!nom || !date || !intervalle || intervalle < 1) {
+if (
+  !nom ||
+  !date ||
+  (categorie === "Contrat" ? !dateFin : (!intervalle || intervalle < 1))
+) {
     alert("Veuillez renseigner le nom, la date et la fréquence.");
     return;
   }
