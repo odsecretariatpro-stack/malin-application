@@ -1360,9 +1360,15 @@ function actualiserAlertesEntretiens() {
   };
 
   entretiens.forEach(entretien => {
-    const date = new Date(entretien.date + "T12:00:00");
-    date.setMonth(date.getMonth() + entretien.intervalle);
-    date.setHours(0, 0, 0, 0);
+    const date = entretien.categorie === "Contrat" && entretien.dateFin
+  ? new Date(entretien.dateFin + "T12:00:00")
+  : new Date(entretien.date + "T12:00:00");
+
+if (!(entretien.categorie === "Contrat" && entretien.dateFin)) {
+  date.setMonth(date.getMonth() + entretien.intervalle);
+}
+
+date.setHours(0, 0, 0, 0);
 
     const jours = Math.ceil((date - aujourdHui) / 86400000);
 
