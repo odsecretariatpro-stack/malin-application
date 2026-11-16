@@ -699,13 +699,18 @@ function supprimerListe() {
   sauvegarderToutesLesListes();
   afficherProduits();
 }
- function exporterListes() {
+
+function exporterListes() {
   const sauvegarde = {
-    version: 2,
+    version: 3,
     date: new Date().toISOString(),
     listeActiveId: listeActiveId,
     listes: listesCourses,
-    budget: operationsBudget
+    budget: operationsBudget,
+    profil: {
+      nom: localStorage.getItem("malinProfilNom") || "",
+      foyer: localStorage.getItem("malinProfilFoyer") || ""
+    }
   };
 
   const fichier = new Blob(
