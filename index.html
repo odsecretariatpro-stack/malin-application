@@ -477,6 +477,20 @@ select {
   <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
 </section>
 
+<section class="page" id="profil">
+  <h1>👤 Mon profil</h1>
+  <p class="subtitle">Personnalisez votre application MALIN.</p>
+
+  <div class="card">
+    <h2>Mes informations</h2>
+    <label for="profilNom">Mon prénom ou pseudonyme</label>
+    <input type="text" id="profilNom" placeholder="Comment souhaitez-vous être appelé ?">
+    <button onclick="sauvegarderProfil()">💾 Enregistrer mon profil</button>
+  </div>
+
+  <button class="back" onclick="ouvrir('accueil')">← Retour à l'accueil</button>
+</section>
+
 </main>
 
 
@@ -904,7 +918,7 @@ function ouvrir(nom, bouton) {
   if (bouton) {
     bouton.classList.add("active");
   } else {
-    const index = ["accueil","budget","courses","maison","astuces"].indexOf(nom);
+   const index = ["accueil","budget","courses","maison","astuces","profil"].indexOf(nom);
     if (index >= 0) document.querySelectorAll("footer button")[index].classList.add("active");
   }
 
@@ -1077,6 +1091,29 @@ document.getElementById("budgetMonth").addEventListener(
 chargerBudget();
 
 chargerProduits();
+
+function sauvegarderProfil() {
+  const nom = document.getElementById("profilNom").value.trim();
+
+  if (!nom) {
+    alert("Veuillez saisir votre prénom ou pseudonyme.");
+    return;
+  }
+
+  localStorage.setItem("malinProfilNom", nom);
+  alert("Votre profil a bien été enregistré !");
+}
+
+function chargerProfil() {
+  const nom = localStorage.getItem("malinProfilNom");
+
+  if (nom) {
+    document.getElementById("profilNom").value = nom;
+  }
+}
+
+chargerProfil();
+  
 </script>
 <script src="https://www.gstatic.com/firebasejs/13.3.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/13.3.0/firebase-messaging-compat.js"></script>
