@@ -1369,6 +1369,7 @@ carte.innerHTML = `
       <p>Coût : ${entretien.cout.toFixed(2)} €</p>
       <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
       <p>Notes : ${entretien.notes || "Aucune"}</p>
+      <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
       <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
 
@@ -1385,7 +1386,23 @@ function supprimerEntretien(id) {
   localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
   afficherEntretiens();
 }
+function marquerEntretienEffectue(id) {
+  const entretien = entretiens.find(e => e.id === id);
 
+  if (!entretien) return;
+
+  if (!confirm("Confirmer que cet entretien a été effectué aujourd'hui ?")) {
+    return;
+  }
+
+  entretien.date = new Date().toISOString().slice(0, 10);
+
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+
+  afficherEntretiens();
+
+  alert("Entretien mis à jour !");
+}
 afficherEntretiens();
  
 </script>
