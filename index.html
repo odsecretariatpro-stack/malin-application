@@ -1370,7 +1370,16 @@ carte.innerHTML = `
       <p>Coût : ${entretien.cout.toFixed(2)} €</p>
       <p>Professionnel : ${entretien.professionnel || "Non renseigné"}</p>
       <p>Notes : ${entretien.notes || "Aucune"}</p>
-      <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
+     <p>📚 Historique : ${(entretien.historique || []).length} entretien(s) effectué(s)</p>
+
+${(entretien.historique || []).map(h => `
+  <div class="historique-item">
+    <p>📅 Date : ${new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR")}</p>
+    <p>💶 Coût : ${Number(h.cout || 0).toFixed(2)} €</p>
+    <p>👨‍🔧 Professionnel : ${h.professionnel || "Non renseigné"}</p>
+    <p>📝 Notes : ${h.notes || "Aucune"}</p>
+  </div>
+`).join("")}
       <button onclick="marquerEntretienEffectue('${entretien.id}')">✅ Marquer comme effectué</button>
       <button onclick="supprimerEntretien('${entretien.id}')">🗑️ Supprimer</button>
     `;
