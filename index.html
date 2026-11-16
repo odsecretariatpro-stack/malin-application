@@ -1283,13 +1283,25 @@ function chargerProfil() {
   document.getElementById("profilNom").value = nom;
   document.getElementById("profilFoyer").value = foyer;
   const accueilFoyer = document.getElementById("accueilFoyer");
-  const accueilBonjour = document.getElementById("accueilBonjour");
+ 
+const accueilBonjour = document.getElementById("accueilBonjour");
+
+const heure = new Date().getHours();
+
+let salutation = "Bonsoir";
+
+if (heure >= 5 && heure < 12) {
+  salutation = "Bonjour";
+} else if (heure >= 12 && heure < 19) {
+  salutation = "Bon après-midi";
+}
 
 if (accueilBonjour) {
   accueilBonjour.textContent = nom
-    ? "Bonjour " + nom + " ! ☀️"
-    : "Bonjour ! ☀️";
+    ? salutation + " " + nom + " ! ☀️"
+    : salutation + " ! ☀️";
 }
+
 
 if (accueilFoyer) {
   accueilFoyer.textContent = foyer
