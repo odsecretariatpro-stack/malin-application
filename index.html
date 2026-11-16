@@ -337,7 +337,7 @@ select {
 <main>
 
 <section class="page active" id="accueil">
-  <h1>Bonjour ! ☀️</h1>
+<h1 id="accueilBonjour">Bonjour ! ☀️</h1>
   <p class="subtitle">Bienvenue dans votre espace MALIN.</p>
   <div class="highlight" id="accueilFoyer">
   👨‍👩‍👧‍👦 Votre foyer : informations à compléter dans Profil.
@@ -364,7 +364,7 @@ select {
     <button class="tile" onclick="ouvrir('maison')">
       <span class="emoji">🏡</span>
       <strong>Ma maison</strong>
-      <small>Organisez vos tâches quotidiennes.</small>
+     <small>Suivez l'entretien de votre maison, de vos véhicules et de vos contrats.</small>
     </button>
     <button class="tile" onclick="ouvrir('astuces')">
       <span class="emoji">💡</span>
@@ -1283,6 +1283,13 @@ function chargerProfil() {
   document.getElementById("profilNom").value = nom;
   document.getElementById("profilFoyer").value = foyer;
   const accueilFoyer = document.getElementById("accueilFoyer");
+  const accueilBonjour = document.getElementById("accueilBonjour");
+
+if (accueilBonjour) {
+  accueilBonjour.textContent = nom
+    ? "Bonjour " + nom + " ! ☀️"
+    : "Bonjour ! ☀️";
+}
 
 if (accueilFoyer) {
   accueilFoyer.textContent = foyer
