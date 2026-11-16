@@ -1489,40 +1489,75 @@ ${historiqueHTML}
   actualiserAlertesEntretiens();
 }
 
+
 function modifierEntretien(id) {
   const entretien = entretiens.find(e => e.id === id);
   if (!entretien) return;
 
-  const nouveauNom = prompt("Nom de l'équipement ou du véhicule :", entretien.nom);
+  const estContrat = entretien.categorie === "Contrat";
+
+  const nouveauNom = prompt(
+    "Nom de l'équipement, du véhicule ou du contrat :",
+    entretien.nom
+  );
   if (nouveauNom === null) return;
 
-  const nouvelleDate = prompt("Date du dernier entretien (AAAA-MM-JJ) :", entretien.date);
+  const nouvelleDate = prompt(
+    estContrat
+      ? "Date de début du contrat (AAAA-MM-JJ) :"
+      : "Date du dernier entretien (AAAA-MM-JJ) :",
+    entretien.date
+  );
   if (nouvelleDate === null) return;
 
-  const nouvelleFrequence = prompt("Fréquence en mois :", entretien.intervalle);
-  if (nouvelleFrequence === null) return;
+  let nouvelleDateFin = entretien.dateFin || "";
+  let nouvelleFrequence = entretien.intervalle;
 
-  const nouveauCout = prompt("Coût de l'entretien (€) :", entretien.cout);
+  if (estContrat) {
+    nouvelleDateFin = prompt(
+      "Date de fin ou de renouvellement (AAAA-MM-JJ) :",
+      entretien.dateFin || ""
+    );
+    if (nouvelleDateFin === null) return;
+  } else {
+    nouvelleFrequence = prompt(
+      "Fréquence en mois :",
+      entretien.intervalle
+    );
+    if (nouvelleFrequence === null) return;
+  }
+
+  const nouveauCout = prompt("Coût ou montant (€) :", entretien.cout);
   if (nouveauCout === null) return;
 
-  const nouveauProfessionnel = prompt("Professionnel :", entretien.professionnel || "");
+  const nouveauProfessionnel = prompt(
+    "Professionnel ou organisme :",
+    entretien.professionnel || ""
+  );
   if (nouveauProfessionnel === null) return;
 
   const nouvellesNotes = prompt("Notes :", entretien.notes || "");
   if (nouvellesNotes === null) return;
 
-  if (!nouveauNom.trim() || !nouvelleDate ||
-      !Number.isInteger(Number(nouvelleFrequence)) ||
-      Number(nouvelleFrequence) < 1 ||
-      !Number.isFinite(Number(nouveauCout)) ||
-      Number(nouveauCout) < 0) {
+  if (
+    !nouveauNom.trim() ||
+    !nouvelleDate ||
+    (estContrat
+      ? !nouvelleDateFin
+      : (!Number.isInteger(Number(nouvelleFrequence)) ||
+         Number(nouvelleFrequence) < 1)
+    ) ||
+    !Number.isFinite(Number(nouveauCout)) ||
+    Number(nouveauCout) < 0
+  ) {
     alert("Certaines informations sont invalides. Aucune modification enregistrée.");
     return;
   }
 
   entretien.nom = nouveauNom.trim();
   entretien.date = nouvelleDate;
-  entretien.intervalle = Number(nouvelleFrequence);
+  entretien.dateFin = estContrat ? nouvelleDateFin : entretien.dateFin;
+  entretien.intervalle = estContrat ? 0 : Number(nouvelleFrequence);
   entretien.cout = Number(nouveauCout);
   entretien.professionnel = nouveauProfessionnel.trim();
   entretien.notes = nouvellesNotes.trim();
@@ -1532,6 +1567,7 @@ function modifierEntretien(id) {
 
   alert("Entretien modifié avec succès !");
 }
+
 
 function supprimerEntretien(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet entretien ?")) return;
