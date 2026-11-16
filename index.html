@@ -545,7 +545,7 @@ select {
     <input type="text" id="entretienNom" placeholder="Ex : chaudière, voiture familiale...">
 
    <label for="entretienDate">Date du dernier entretien ou de début du contrat</label>
-<input type="date" id="entretienDate">
+<input type="text" id="entretienDate" placeholder="JJ/MM/AAAA" maxlength="10">
 
 <label for="entretienFin">Date de fin ou de renouvellement</label>
 <input type="date" id="entretienFin">
@@ -1295,11 +1295,37 @@ chargerProfil();
 
 let entretiens = JSON.parse(localStorage.getItem("malinEntretiens") || "[]");
 
+ 
+function convertirDate(dateTexte) {
+  const resultat = dateTexte.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+
+  if (!resultat) return null;
+
+  const jour = Number(resultat[1]);
+  const mois = Number(resultat[2]);
+  const annee = Number(resultat[3]);
+
+  const date = new Date(annee, mois - 1, jour);
+
+  if (
+    date.getFullYear() !== annee ||
+    date.getMonth() !== mois - 1 ||
+    date.getDate() !== jour
+  ) {
+    return null;
+  }
+
+  return `${annee}-${String(mois).padStart(2, "0")}-${String(jour).padStart(2, "0")}`;
+}
+ 
 function ajouterEntretien() {
   const categorie = document.getElementById("entretienCategorie").value;
   const nom = document.getElementById("entretienNom").value.trim();
-  const date = document.getElementById("entretienDate").value;
-  const dateFin = document.getElementById("entretienFin").value;
+ const dateSaisie = document.getElementById("entretienDate").value.trim();
+const dateFinSaisie = document.getElementById("entretienFin").value.trim();
+
+const date = convertirDate(dateSaisie);
+const dateFin = dateFinSaisie ? convertirDate(dateFinSaisie) : "";
   const intervalle = Number(document.getElementById("entretienIntervalle").value);
   const cout = Number(document.getElementById("entretienCout").value) || 0;
   const professionnel = document.getElementById("entretienProfessionnel").value.trim();
@@ -1490,6 +1516,15 @@ ${historiqueHTML}
 }
 
 
+function formaterDateFR(dateTexte) {
+  if (!dateTexte) return "";
+
+  const morceaux = dateTexte.split("-");
+  if (morceaux.length !== 3) return dateTexte;
+
+  return morceaux[2] + "/" + morceaux[1] + "/" + morceaux[0];
+}
+
 function modifierEntretien(id) {
   const entretien = entretiens.find(e => e.id === id);
   if (!entretien) return;
@@ -1506,7 +1541,7 @@ function modifierEntretien(id) {
     estContrat
       ? "Date de début du contrat (AAAA-MM-JJ) :"
       : "Date du dernier entretien (AAAA-MM-JJ) :",
-    entretien.date
+   formaterDateFR(entretien.date)
   );
   if (nouvelleDate === null) return;
 
@@ -1516,7 +1551,7 @@ function modifierEntretien(id) {
   if (estContrat) {
     nouvelleDateFin = prompt(
       "Date de fin ou de renouvellement (AAAA-MM-JJ) :",
-      entretien.dateFin || ""
+      formaterDateFR(entretien.dateFin)
     );
     if (nouvelleDateFin === null) return;
   } else {
@@ -1540,10 +1575,10 @@ function modifierEntretien(id) {
   if (nouvellesNotes === null) return;
 
   if (
-    !nouveauNom.trim() ||
-    !nouvelleDate ||
-    (estContrat
-      ? !nouvelleDateFin
+   !nouveauNom.trim() ||
+!convertirDate(nouvelleDate) ||
+(estContrat
+  ? !convertirDate(nouvelleDateFin)
       : (!Number.isInteger(Number(nouvelleFrequence)) ||
          Number(nouvelleFrequence) < 1)
     ) ||
@@ -1554,9 +1589,11 @@ function modifierEntretien(id) {
     return;
   }
 
-  entretien.nom = nouveauNom.trim();
-  entretien.date = nouvelleDate;
-  entretien.dateFin = estContrat ? nouvelleDateFin : entretien.dateFin;
+ entretien.nom = nouveauNom.trim();
+entretien.date = convertirDate(nouvelleDate);
+entretien.dateFin = estContrat
+  ? convertirDate(nouvelleDateFin)
+  : entretien.dateFin;
   entretien.intervalle = estContrat ? 0 : Number(nouvelleFrequence);
   entretien.cout = Number(nouveauCout);
   entretien.professionnel = nouveauProfessionnel.trim();
