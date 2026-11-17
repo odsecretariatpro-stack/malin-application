@@ -1817,7 +1817,7 @@ function renouvelerContrat(id) {
 
   entretien.dateFin = dateConvertie;
 
-  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+ sauvegarderEntretiens();
 
   afficherEntretiens();
 
@@ -1848,7 +1848,7 @@ function marquerEntretienEffectue(id) {
 
   entretien.date = dateDuJour;
 
-  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
+ sauvegarderEntretiens();
 
   afficherEntretiens();
 
