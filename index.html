@@ -2009,7 +2009,7 @@ window.authReady = new Promise((resolve, reject) => {
   }
 }
 
-async function connecterCompte() {
+window.connecterCompte = async function() {async function connecterCompte() {
   const email = document.getElementById("connexionEmail").value.trim();
   const motDePasse = document.getElementById("connexionMotDePasse").value;
 
