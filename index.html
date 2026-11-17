@@ -1760,7 +1760,28 @@ function supprimerEntretien(id) {
   localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
   afficherEntretiens();
 }
+async function sauvegarderEntretiens() {
+  // Sauvegarde sur l'appareil
+  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
 
+  // Sauvegarde dans le cloud
+  try {
+    const user = await window.authReady;
+
+    await db.collection("users")
+      .doc(user.uid)
+      .collection("data")
+      .doc("entretiens")
+      .set({
+        entretiens: entretiens,
+        dateModification: new Date().toISOString()
+      });
+
+    console.log("Carnet d'entretien sauvegardé dans le cloud !");
+  } catch (error) {
+    console.error("Erreur sauvegarde entretiens :", error);
+  }
+}
 function renouvelerContrat(id) {
   const entretien = entretiens.find(e => e.id === id);
   if (!entretien || entretien.categorie !== "Contrat") return;
