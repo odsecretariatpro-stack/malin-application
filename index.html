@@ -1782,7 +1782,21 @@ auth.signInAnonymously()
   .catch((error) => {
     console.error("Erreur identification MALIN :", error);
   }); 
-db.collection("test").limit(1).get()
+auth.onAuthStateChanged((user) => {
+  if (!user) return;
+
+  db.collection("users")
+    .doc(user.uid)
+    .collection("data")
+    .doc("test")
+    .get()
+    .then(() => {
+      console.log("Accès Firestore autorisé !");
+    })
+    .catch((error) => {
+      console.error("Erreur Firestore :", error);
+    });
+});
   .then(() => {
     console.log("Firestore MALIN connecté !");
   })
