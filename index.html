@@ -1060,7 +1060,41 @@ function supprimerAchats() {
   sauvegarderProduits();
   afficherProduits();
 }
+async function partagerListe() {
+  if (produits.length === 0) {
+    alert("Votre liste est vide !");
+    return;
+  }
 
+  let texte = "🛒 Ma liste de courses MALIN\n\n";
+
+  produits.forEach(p => {
+    texte += (p.achete ? "✅ " : "☐ ")
+      + p.nom + " - Quantité : " + p.quantite + "\n";
+  });
+
+  texte += "\nEnvoyé avec MALIN ❤️";
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Ma liste de courses MALIN",
+        text: texte
+      });
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Erreur de partage :", error);
+      }
+    }
+  } else {
+    try {
+      await navigator.clipboard.writeText(texte);
+      alert("Liste copiée ! Collez-la dans WhatsApp ou vos messages.");
+    } catch (error) {
+      alert("Impossible de partager la liste sur cet appareil.");
+    }
+  }
+}
 function afficherProduits() {
   actualiserSelecteurListes();
 
