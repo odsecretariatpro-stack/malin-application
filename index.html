@@ -1771,6 +1771,13 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+db.collection("test").limit(1).get()
+  .then(() => {
+    console.log("Firestore MALIN connecté !");
+  })
+  .catch((error) => {
+    console.log("Firestore MALIN : ", error.code);
+  });  
   
 async function activerNotifications() {
   try {
