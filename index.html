@@ -1942,6 +1942,57 @@ window.authReady = new Promise((resolve, reject) => {
     }
   }, reject);
 });
+ async function associerCompte() {
+  const email = document.getElementById("compteEmail").value.trim();
+  const motDePasse = document.getElementById("compteMotDePasse").value;
+
+  if (!email || !motDePasse) {
+    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
+    return;
+  }
+
+  if (motDePasse.length < 6) {
+    alert("Le mot de passe doit contenir au moins 6 caractères.");
+    return;
+  }
+
+  try {
+    await window.authReady;
+
+    const user = auth.currentUser;
+
+    if (!user || !user.isAnonymous) {
+      alert("Ce compte est déjà associé ou aucun utilisateur n'est connecté.");
+      return;
+    }
+
+    const credential = firebase.auth.EmailAuthProvider.credential(
+      email,
+      motDePasse
+    );
+
+    await user.linkWithCredential(credential);
+
+    console.log("Compte MALIN associé :", auth.currentUser.uid);
+
+    alert("Votre compte MALIN est créé ! Vos données sont conservées.");
+
+    document.getElementById("compteMotDePasse").value = "";
+
+  } catch (error) {
+    console.error("Erreur création compte MALIN :", error);
+
+    if (error.code === "auth/email-already-in-use") {
+      alert("Cette adresse e-mail possède déjà un compte. Choisissez une autre adresse.");
+    } else if (error.code === "auth/invalid-email") {
+      alert("L'adresse e-mail n'est pas valide.");
+    } else if (error.code === "auth/weak-password") {
+      alert("Le mot de passe est trop faible.");
+    } else {
+      alert("La création du compte a échoué. Consultez la console.");
+    }
+  }
+} 
 async function activerNotifications() {
   try {
     const permission = await Notification.requestPermission();
