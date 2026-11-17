@@ -1152,11 +1152,30 @@ function chargerBudget() {
   afficherBudget();
 }
 
-function sauvegarderBudget() {
+async function sauvegarderBudget() {
+  // Sauvegarde sur l'appareil
   localStorage.setItem(
     BUDGET_KEY,
     JSON.stringify(operationsBudget)
   );
+
+  // Sauvegarde dans le cloud
+  try {
+    const user = await authReady;
+
+    await db.collection("users")
+      .doc(user.uid)
+      .collection("data")
+      .doc("budget")
+      .set({
+        operations: operationsBudget,
+        dateModification: new Date().toISOString()
+      });
+
+    console.log("Budget sauvegardé dans le cloud !");
+  } catch (error) {
+    console.error("Erreur sauvegarde budget :", error);
+  }
 }
 
 function ajouterOperation() {
