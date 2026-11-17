@@ -1854,8 +1854,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
  const auth = firebase.auth();
-
-const authReady = new Promise((resolve, reject) => {
+window.authReady = null;
+window.authReady = new Promise((resolve, reject) => {
   const unsubscribe = auth.onAuthStateChanged(async (user) => {
     unsubscribe();
 
