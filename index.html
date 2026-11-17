@@ -1222,7 +1222,7 @@ async function sauvegarderBudget() {
 
   // Sauvegarde dans le cloud
   try {
-    const user = await authReady;
+    const user = await window.authReady;
 
     await db.collection("users")
       .doc(user.uid)
