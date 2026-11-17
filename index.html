@@ -2007,7 +2007,45 @@ window.authReady = new Promise((resolve, reject) => {
       alert("La création du compte a échoué. Consultez la console.");
     }
   }
-} 
+}
+
+async function connecterCompte() {
+  const email = document.getElementById("connexionEmail").value.trim();
+  const motDePasse = document.getElementById("connexionMotDePasse").value;
+
+  if (!email || !motDePasse) {
+    alert("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
+    return;
+  }
+
+  try {
+    await window.authReady;
+
+    await auth.signInWithEmailAndPassword(email, motDePasse);
+
+    console.log("Connexion MALIN réussie :", auth.currentUser.uid);
+
+    document.getElementById("connexionMotDePasse").value = "";
+
+    alert("Bienvenue sur MALIN ! Votre compte est connecté.");
+
+    location.reload();
+
+  } catch (error) {
+    console.error("Erreur connexion MALIN :", error);
+
+    if (
+      error.code === "auth/user-not-found" ||
+      error.code === "auth/wrong-password" ||
+      error.code === "auth/invalid-credential"
+    ) {
+      alert("Adresse e-mail ou mot de passe incorrect.");
+    } else {
+      alert("La connexion a échoué. Consultez la console.");
+    }
+  }
+}
+
 async function activerNotifications() {
   try {
     const permission = await Notification.requestPermission();
