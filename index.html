@@ -1756,9 +1756,9 @@ entretien.dateFin = estContrat
 function supprimerEntretien(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet entretien ?")) return;
 
-  entretiens = entretiens.filter(entretien => entretien.id !== id);
-  localStorage.setItem("malinEntretiens", JSON.stringify(entretiens));
-  afficherEntretiens();
+ entretiens = entretiens.filter(entretien => entretien.id !== id);
+sauvegarderEntretiens();
+afficherEntretiens();
 }
 async function sauvegarderEntretiens() {
   // Sauvegarde sur l'appareil
