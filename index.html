@@ -695,8 +695,12 @@ async function sauvegarderToutesLesListes() {
       );
     }
 
-    // Sauvegarde dans le cloud
-   const user = await window.authReady;
+   // Sauvegarde dans le cloud
+if (!window.authReady) {
+  return;
+}
+
+const user = await window.authReady;
 
     await db.collection("users")
       .doc(user.uid)
