@@ -679,17 +679,41 @@ function listeActive() {
   return listesCourses.find(liste => liste.id === listeActiveId) || null;
 }
 
-function sauvegarderToutesLesListes() {
+async function sauvegarderToutesLesListes() {
   try {
-    localStorage.setItem(LISTS_STORAGE_KEY, JSON.stringify(listesCourses));
+    alert("La sauvegarde des courses est lancée !");
+    // Sauvegarde sur l'appareil
+    localStorage.setItem(
+      LISTS_STORAGE_KEY,
+      JSON.stringify(listesCourses)
+    );
+
     if (listeActiveId) {
-      localStorage.setItem(ACTIVE_LIST_STORAGE_KEY, listeActiveId);
+      localStorage.setItem(
+        ACTIVE_LIST_STORAGE_KEY,
+        listeActiveId
+      );
     }
-  } catch (e) {
-    alert("La sauvegarde des listes n'a pas fonctionné sur cet appareil.");
+
+    // Sauvegarde dans le cloud
+    const user = await authReady;
+
+    await db.collection("users")
+      .doc(user.uid)
+      .collection("data")
+      .doc("courses")
+      .set({
+        listes: listesCourses,
+        listeActiveId: listeActiveId || "",
+        dateModification: new Date().toISOString()
+      });
+
+    console.log("Listes de courses sauvegardées dans le cloud !");
+
+  } catch (error) {
+    console.error("Erreur sauvegarde des courses :", error);
   }
 }
-
 function chargerProduits() {
   try {
     const donneesListes = localStorage.getItem(LISTS_STORAGE_KEY);
