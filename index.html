@@ -632,6 +632,19 @@ select {
     <input type="number" id="profilFoyer" min="1" max="20" placeholder="Exemple : 4">
 
     <button onclick="sauvegarderProfil()">💾 Enregistrer mon profil</button>
+   </div>
+
+  <div class="card">
+    <h2>🔐 Mon compte MALIN</h2>
+    <p>Créez votre compte pour retrouver vos données sur un autre appareil.</p>
+
+    <label for="compteEmail">Mon adresse e-mail</label>
+    <input type="email" id="compteEmail" placeholder="exemple@email.com" autocomplete="email">
+
+    <label for="compteMotDePasse">Mon mot de passe</label>
+    <input type="password" id="compteMotDePasse" placeholder="6 caractères minimum" autocomplete="new-password">
+
+    <button type="button" onclick="associerCompte()">🔐 Créer mon compte MALIN</button>
   </div>
 
   <div class="card">
