@@ -1792,18 +1792,12 @@ auth.onAuthStateChanged((user) => {
     .get()
     .then(() => {
       console.log("Accès Firestore autorisé !");
+      console.log("Firestore MALIN connecté !");
     })
     .catch((error) => {
-      console.error("Erreur Firestore :", error);
+      console.error("Erreur Firestore :", error.code);
     });
 });
-  .then(() => {
-    console.log("Firestore MALIN connecté !");
-  })
-  .catch((error) => {
-    console.log("Firestore MALIN : ", error.code);
-  });  
-  
 async function activerNotifications() {
   try {
     const permission = await Notification.requestPermission();
