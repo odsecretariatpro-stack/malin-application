@@ -1770,7 +1770,8 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-
+const db = firebase.firestore();
+  
 async function activerNotifications() {
   try {
     const permission = await Notification.requestPermission();
