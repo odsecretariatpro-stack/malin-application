@@ -1373,7 +1373,7 @@ chargerBudget();
 chargerProduits();
 
 
-function sauvegarderProfil() {
+async function sauvegarderProfil() {
   const nom = document.getElementById("profilNom").value.trim();
   const foyer = document.getElementById("profilFoyer").value;
 
@@ -1387,12 +1387,34 @@ function sauvegarderProfil() {
     return;
   }
 
+  // Sauvegarde sur l'appareil
   localStorage.setItem("malinProfilNom", nom);
-localStorage.setItem("malinProfilFoyer", foyer);
+  localStorage.setItem("malinProfilFoyer", foyer);
 
-chargerProfil();
+  // Sauvegarde dans Firebase
+  try {
+    const user = await window.authReady;
 
-alert("Votre profil a bien été enregistré !");
+    await db.collection("users")
+      .doc(user.uid)
+      .collection("data")
+      .doc("profil")
+      .set({
+        nom: nom,
+        foyer: foyer,
+        dateModification: new Date().toISOString()
+      });
+
+    console.log("Profil sauvegardé dans le cloud !");
+
+    chargerProfil();
+
+    alert("Votre profil a bien été enregistré !");
+  } catch (error) {
+    console.error("Erreur sauvegarde profil :", error);
+    chargerProfil();
+    alert("Profil enregistré sur cet appareil, mais la sauvegarde cloud a échoué.");
+  }
 }
 
 function chargerProfil() {
