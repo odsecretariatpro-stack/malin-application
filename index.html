@@ -641,22 +641,17 @@ select {
   <p id="emailConnecte">Vérification du compte...</p>
   <button type="button" onclick="deconnecterCompte()" style="background:#242321; color:white; padding:12px; border:0; border-radius:8px;">
   🚪 Déconnexion
-</button>
+<div id="creationCompte">
+  <p>Créez votre compte pour retrouver vos données sur un autre appareil.</p>
+
+  <label for="compteEmail">Mon adresse e-mail</label>
+  <input type="email" id="compteEmail" placeholder="exemple@email.com" autocomplete="email">
+
+  <label for="compteMotDePasse">Mon mot de passe</label>
+  <input type="password" id="compteMotDePasse" placeholder="6 caractères minimum" autocomplete="new-password">
+
+  <button type="button" onclick="associerCompte()">🔐 Créer mon compte MALIN</button>
 </div>
-    <p>Créez votre compte pour retrouver vos données sur un autre appareil.</p>
-
-    <label for="compteEmail">Mon adresse e-mail</label>
-    <input type="email" id="compteEmail" placeholder="exemple@email.com" autocomplete="email">
-
-    <label for="compteMotDePasse">Mon mot de passe</label>
-    <input type="password" id="compteMotDePasse" placeholder="6 caractères minimum" autocomplete="new-password">
-
-    <button type="button" onclick="associerCompte()">🔐 Créer mon compte MALIN</button>
-
-<hr>
-
-<h3>J'ai déjà un compte MALIN</h3>
-
 <label for="connexionEmail">Mon adresse e-mail</label>
 <input type="email" id="connexionEmail" placeholder="Mon adresse e-mail">
 
@@ -735,18 +730,22 @@ if (!window.authReady) {
   return;
 }
 
+
 const user = await window.authReady;
 
-    await db.collection("users")
-      .doc(user.uid)
-      .collection("data")
-      .doc("courses")
-      .set({
-        listes: listesCourses,
-        listeActiveId: listeActiveId || "",
-        dateModification: new Date().toISOString()
-      });
+if (!user) {
+  return;
+}
 
+await db.collection("users")
+  .doc(user.uid)
+  .collection("data")
+  .doc("courses")
+  .set({
+    listes: listesCourses,
+    listeActiveId: listeActiveId || "",
+    dateModification: new Date().toISOString()
+  });
     console.log("Listes de courses sauvegardées dans le cloud !");
 
   } catch (error) {
@@ -1259,9 +1258,17 @@ async function sauvegarderBudget() {
     JSON.stringify(operationsBudget)
   );
 
-  // Sauvegarde dans le cloud
-  try {
+ // Sauvegarde dans le cloud
+try {
+    if (!window.authReady) {
+      return;
+    }
+
     const user = await window.authReady;
+
+    if (!user) {
+      return;
+    }
 
     await db.collection("users")
       .doc(user.uid)
@@ -1432,7 +1439,15 @@ async function sauvegarderProfil() {
 
   // Sauvegarde dans Firebase
   try {
-    const user = await window.authReady;
+   if (!window.authReady) {
+  return;
+}
+
+const user = await window.authReady;
+
+if (!user) {
+  return;
+}
 
     await db.collection("users")
       .doc(user.uid)
@@ -1827,7 +1842,15 @@ async function sauvegarderEntretiens() {
 
   // Sauvegarde dans le cloud
   try {
-    const user = await window.authReady;
+    if (!window.authReady) {
+  return;
+}
+
+const user = await window.authReady;
+
+if (!user) {
+  return;
+}
 
     await db.collection("users")
       .doc(user.uid)
@@ -1942,22 +1965,42 @@ window.authReady = new Promise((resolve, reject) => {
     unsubscribe();
 
     try {
-      if (!user) {
-        const result = await auth.signInAnonymously();
-        user = result.user;
-      }
+     if (!user && localStorage.getItem("malinDeconnecte") === "oui") {
+ const etatCompte = document.getElementById("etatCompte");
 
-      console.log("Utilisateur MALIN identifié :", user.uid);
-      
+if (etatCompte) {
+  etatCompte.style.display = "none";
+}
+ const creationCompte = document.getElementById("creationCompte");
 
-      await db.collection("users")
-        .doc(user.uid)
-        .collection("data")
-        .doc("test")
-        .get();
+if (creationCompte) {
+  creationCompte.style.display = "none";
+}      
 
-      console.log("Accès Firestore autorisé !");
-      resolve(user);
+  const ecranConnexion = document.getElementById("ecranConnexion");
+  if (ecranConnexion) {
+    ecranConnexion.style.display = "block";
+  }
+
+  resolve(null);
+  return;
+}
+
+if (!user) {
+  const result = await auth.signInAnonymously();
+  user = result.user;
+}
+
+console.log("Utilisateur MALIN identifié :", user.uid);
+
+await db.collection("users")
+  .doc(user.uid)
+  .collection("data")
+  .doc("test")
+  .get();
+
+console.log("Accès Firestore autorisé !");
+resolve(user);
 
     } catch (error) {
       console.error("Erreur MALIN :", error);
@@ -1965,11 +2008,31 @@ window.authReady = new Promise((resolve, reject) => {
     }
   }, reject);
 });
-  window.authReady.then((user) => {
+ window.authReady.then((user) => {
   const emailConnecte = document.getElementById("emailConnecte");
+  const etatCompte = document.getElementById("etatCompte");
+  const creationCompte = document.getElementById("creationCompte");
+  const ecranConnexion = document.getElementById("ecranConnexion");
 
-  if (emailConnecte) {
-    emailConnecte.textContent = user.email || "Compte anonyme";
+  if (user) {
+    if (emailConnecte) {
+      emailConnecte.textContent = user.email || "Compte anonyme";
+    }
+
+    if (etatCompte) etatCompte.style.display = "block";
+    if (ecranConnexion) ecranConnexion.style.display = "none";
+
+    if (creationCompte) {
+      creationCompte.style.display = user.isAnonymous ? "block" : "none";
+    }
+  } else {
+    if (emailConnecte) {
+      emailConnecte.textContent = "Vous êtes déconnecté.";
+    }
+
+    if (etatCompte) etatCompte.style.display = "none";
+    if (creationCompte) creationCompte.style.display = "none";
+    if (ecranConnexion) ecranConnexion.style.display = "block";
   }
 });
  async function associerCompte() {
@@ -1986,8 +2049,17 @@ window.authReady = new Promise((resolve, reject) => {
     return;
   }
 
-  try {
-    await window.authReady;
+ try {
+    if (!window.authReady) {
+      return;
+    }
+
+    const utilisateurConnecte = await window.authReady;
+
+    if (!utilisateurConnecte) {
+      alert("Connectez-vous à MALIN avant de continuer.");
+      return;
+    }
 
     const user = auth.currentUser;
 
@@ -2037,7 +2109,9 @@ window.connecterCompte = async function() {
     await window.authReady;
 
     await auth.signInWithEmailAndPassword(email, motDePasse);
-
+    
+    localStorage.removeItem("malinDeconnecte");
+    
     console.log("Connexion MALIN réussie :", auth.currentUser.uid);
 
     document.getElementById("connexionMotDePasse").value = "";
@@ -2069,6 +2143,7 @@ window.deconnecterCompte = async function() {
   if (!confirmation) return;
 
   try {
+    localStorage.setItem("malinDeconnecte", "oui");
     await auth.signOut();
     alert("Vous êtes déconnecté de MALIN.");
     location.reload();
