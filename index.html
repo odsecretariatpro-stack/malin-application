@@ -1414,8 +1414,59 @@ document.getElementById("budgetMonth").addEventListener(
   "change", afficherBudget
 );
 
-chargerBudget();
 
+async function chargerBudget() {
+  try {
+    // Charger d'abord les données présentes sur l'appareil
+    operationsBudget = JSON.parse(
+      localStorage.getItem(BUDGET_KEY) || "[]"
+    );
+
+    if (!Array.isArray(operationsBudget)) {
+      operationsBudget = [];
+    }
+  } catch (e) {
+    operationsBudget = [];
+  }
+
+  document.getElementById("budgetMonth").value = moisActuel();
+  afficherBudget();
+
+  // Attendre l'identification du compte MALIN
+  try {
+    const user = await window.authReady;
+
+    if (!user) return;
+
+    // Récupérer le budget depuis Firebase
+    const documentBudget = await db.collection("users")
+      .doc(user.uid)
+      .collection("data")
+      .doc("budget")
+      .get();
+
+    if (documentBudget.exists) {
+      const donnees = documentBudget.data();
+
+      if (Array.isArray(donnees.operations)) {
+        operationsBudget = donnees.operations;
+
+        localStorage.setItem(
+          BUDGET_KEY,
+          JSON.stringify(operationsBudget)
+        );
+
+        afficherBudget();
+        console.log("Budget récupéré depuis Firebase !");
+      }
+    }
+  } catch (error) {
+    console.error("Erreur chargement budget Firebase :", error);
+  }
+}
+
+
+chargerBudget();
 chargerProduits();
 
 
