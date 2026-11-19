@@ -636,24 +636,10 @@ select {
 
   <div class="card">
     <h2>🔐 Mon compte MALIN</h2>
-    
-window.deconnecterCompte = async function() {
-  const confirmation = confirm(
-    "Voulez-vous vraiment vous déconnecter de MALIN ?"
-  );
-
-  if (!confirmation) return;
-
-  try {
-    await auth.signOut();
-    alert("Vous êtes déconnecté de MALIN.");
-    location.reload();
-  } catch (error) {
-    console.error("Erreur déconnexion :", error);
-    alert("La déconnexion a échoué.");
-  }
-};
-
+<div id="etatCompte" style="background:#f5f0e6; padding:12px; border-radius:10px; margin-bottom:15px;">
+  <strong>Mon compte connecté</strong>
+  <p id="emailConnecte">Vérification du compte...</p>
+</div>
     <p>Créez votre compte pour retrouver vos données sur un autre appareil.</p>
 
     <label for="compteEmail">Mon adresse e-mail</label>
@@ -1959,6 +1945,11 @@ window.authReady = new Promise((resolve, reject) => {
       }
 
       console.log("Utilisateur MALIN identifié :", user.uid);
+      const emailConnecte = document.getElementById("emailConnecte");
+
+if (emailConnecte) {
+  emailConnecte.textContent = user.email || "Compte anonyme";
+}
 
       await db.collection("users")
         .doc(user.uid)
