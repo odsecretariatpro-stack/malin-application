@@ -1945,11 +1945,7 @@ window.authReady = new Promise((resolve, reject) => {
       }
 
       console.log("Utilisateur MALIN identifié :", user.uid);
-      const emailConnecte = document.getElementById("emailConnecte");
-
-if (emailConnecte) {
-  emailConnecte.textContent = user.email || "Compte anonyme";
-}
+      
 
       await db.collection("users")
         .doc(user.uid)
@@ -1965,6 +1961,13 @@ if (emailConnecte) {
       reject(error);
     }
   }, reject);
+});
+  window.authReady.then((user) => {
+  const emailConnecte = document.getElementById("emailConnecte");
+
+  if (emailConnecte) {
+    emailConnecte.textContent = user.email || "Compte anonyme";
+  }
 });
  async function associerCompte() {
   const email = document.getElementById("compteEmail").value.trim();
